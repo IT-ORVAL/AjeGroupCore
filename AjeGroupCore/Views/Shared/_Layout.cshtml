@@ -6,16 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - AjeGroupCore</title>
 
-    <environment names="Development">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+    @*<link rel="stylesheet" href="~/css/bootstrap.min.css">*@
+
+    <!-- Material Design Bootstrap -->
+    @*<link rel="stylesheet" href="~/css/mdb.css">*@
+
+    <link rel="stylesheet" href="~/css/chatbot.css">
+
+    <link rel="stylesheet" href="~/css/toastr.min.css">
+    <link rel="stylesheet" href="~/css/sweetalert.css">
+
+    <link rel="stylesheet" href="~/css/site.css" />
+
+    @*<environment names="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
+
     <environment names="Staging,Production">
         <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
-    </environment>
+    </environment>*@
+
+    @RenderSection("Styles", required: false)
+
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
 <body>
@@ -28,27 +49,31 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">AjeGroupCore</a>
+                <a href="https://www.ajegroup.com/es/">
+                    <img id="logo" src="~/images/logo.jpg" alt="AJE Group" />
+                </a>
+                @*<a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">AJE Group</a>*@
+
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Inicio</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="About">Nosotros</a></li>
+                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contáctenos</a></li>
                 </ul>
                 @await Html.PartialAsync("_LoginPartial")
             </div>
         </div>
     </nav>
-    <div class="container body-content">
+    <div class="container body-content main_aje trame">
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2017 - AjeGroupCore</p>
+            <p>&copy; 2017 - <a href="http://vcaperu.com/" target="_blank">VCA Consulting & Solutions</a></p>
         </footer>
     </div>
 
-    <environment names="Development">
+    @*<environment names="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
@@ -66,8 +91,63 @@
                 crossorigin="anonymous"
                 integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
         </script>
+
         <script src="~/js/site.min.js" asp-append-version="true"></script>
-    </environment>
+    </environment>*@
+
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+
+    <script src="~/lib/tether.min.js"></script>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="~/lib/bootstrap.min.js"></script>
+
+    <script src="~/lib/toastr.js"></script>
+    <script src="~/lib/sweetalert.min.js"></script>
+
+    <script src="~/lib/mdb.min.js"></script>
+    <script src="~/lib/adminlte.min.js"></script>
+
+    <script src="~/js/site.min.js" asp-append-version="true"></script>
+
+    <script>
+
+
+            $(function () {
+                toastr.options = {
+                    "closeButton": true,
+                    "debug": false,
+                    "newestOnTop": true,
+                    "progressBar": true,
+                    "positionClass": "toast-top-right",
+                    "preventDuplicates": false,
+                    "showDuration": "300",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                };
+
+                $('.active-notification').on('click', function () {
+                    var msg = $(this).text();
+
+                    toastr.info(msg)
+                });
+
+                $('.work-inprogress').on('click', function () {
+                    swal("En desarrollo!", "Estamos trabajando en esta funcionalidad", "info")
+                });
+
+                $(".collapse-chat").click(function () {
+                    $("#chatbot").toggle();
+                });
+
+            })
+    </script>
+
 
     @RenderSection("Scripts", required: false)
 </body>
