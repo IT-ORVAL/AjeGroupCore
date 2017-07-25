@@ -1,26 +1,6 @@
-﻿/**
-* Copyright 2017 IBM Corp. All Rights Reserved.
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*      http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*
-*/
-
+﻿using IBM.VCA.Watson.Watson.TextToSpeech.Model;
 using System;
-using IBM.VCA.Watson.Watson.TextToSpeech;
-using IBM.VCA.Watson.Watson.TextToSpeech.Model;
-using System.Media;
 using System.IO;
-using System.Web;
 
 namespace IBM.VCA.Watson.Watson.TextToSpeech
 {
@@ -140,31 +120,31 @@ namespace IBM.VCA.Watson.Watson.TextToSpeech
         }
         #endregion
 
-        public static string Synthesize2(string text)
-        {
-            TextToSpeechService _textToSpeech = new TextToSpeechService();
-            _textToSpeech.SetCredential(_username, _password);
+        //public static string Synthesize2(string text)
+        //{
+        //    TextToSpeechService _textToSpeech = new TextToSpeechService();
+        //    _textToSpeech.SetCredential(_username, _password);
 
-            var sample = _textToSpeech.Synthesize(text, Voice.ES_SOFIA, AudioType.WAV);
+        //    var sample = _textToSpeech.Synthesize(text, Voice.ES_SOFIA, AudioType.WAV);
 
-            string file = "sample_" + Guid.NewGuid() + ".wav";
-            string path = string.Format("{0}\\{1}",
-                      HttpContext.Current.Server.MapPath("/Images"), file);
+        //    string file = "sample_" + Guid.NewGuid() + ".wav";
+        //    string path = string.Format("{0}\\{1}",
+        //              HttpContext.Current.Server.MapPath("/Images"), file);
 
-            foreach (string f in Directory.EnumerateFiles(HttpContext.Current.Server.MapPath("/Images/"), "sample_*.wav"))
-            {
-                File.Delete(f);
-            }
+        //    foreach (string f in Directory.EnumerateFiles(HttpContext.Current.Server.MapPath("/Images/"), "sample_*.wav"))
+        //    {
+        //        File.Delete(f);
+        //    }
 
           
-            using (var fileStream = File.Create(path))
-            {
-                sample.CopyTo(fileStream);
-                path = "/Images/" + file;
-            }
+        //    using (var fileStream = File.Create(path))
+        //    {
+        //        sample.CopyTo(fileStream);
+        //        path = "/Images/" + file;
+        //    }
 
-            return path;
-        }
+        //    return path;
+        //}
 
         #region Get Custom Voice Models
         private void GetCustomVoiceModels()

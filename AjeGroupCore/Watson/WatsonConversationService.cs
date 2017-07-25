@@ -12,9 +12,9 @@ namespace IBM.VCA.Watson.Watson
 
         public class WatsonCredentials
         {
-            public string workspaceID = "e5224d61-a99e-48de-bca2-fccfd032478a";
-            public string username = "a7b8ac71-3e55-49f7-bd62-ad7d905919d2";
-            public string password = "LZjxPhMiiwbQ";
+            public string workspaceID = "89fd0c87-c437-4573-9c87-c0d31e721cc8";
+            public string username = "7ecc7e1d-b7a9-472b-9419-a7254411cdd5";
+            public string password = "HQJwcbFZclYL";
         }
 
         public static MessageRequest Message(string text, Context ctx, WatsonCredentials creds)

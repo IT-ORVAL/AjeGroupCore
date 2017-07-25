@@ -14,6 +14,19 @@
             <div class="box-header with-border">
                 <h3 class="box-title">AJE Group Chatbot</h3>
 
+                <div id="resetChat" class="btn-group">
+                    <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-bars"></i> Menú
+                    </button>
+
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="javascript:Sidebar.toggle();">
+                            <i class="fa fa-question-circle"></i> Preguntas Frecuentes
+                        </a>
+                    </div>
+                </div>
+
+
                 <div class="box-tools pull-right">
                     <span data-toggle="tooltip" class="badge bg-light-blue" data-original-title="3 Mensajes nuevos">3</span>
 
@@ -62,7 +75,10 @@
             <div class="box-footer">
                 <form action="#" method="post">
                     <div class="input-group">
-                        <input type="text" name="message" placeholder="Escribir mensaje ..." class="form-control">
+                        <input id="textInput" type="text" name="message" placeholder="Escribir mensaje ..." 
+                               class="form-control"
+                               onkeydown="ConversationPanel.inputKeyDown(event, this)" />
+                        
                         <span class="input-group-btn">
                             <button type="button" class="btn btn-primary btn-flat work-inprogress">Enviar</button>
                         </span>
