@@ -83,3 +83,106 @@
 </div>
 
 @await Html.PartialAsync("_ChatBot")
+
+@section Scripts{
+
+    <script type="text/javascript">
+
+        function sendRequest(msg) {
+            var url = "/Api/ChatBot/";
+
+            $("#textInput").prop("disabled", true);
+            $("#chat_loader").show();
+
+            if (msg === null || $("#textInput").val() == null) {
+                msg = 'welcome';
+            }
+            else {
+                msg = $("#textInput").val();
+                appendMessage(true, msg);
+            }
+
+            $.post(url, { msg: msg }, function (result) {
+                //var obj = JSON.parse(JSON.stringify(result))
+                var obj = JSON.parse(result)
+
+                for (var i = 0; i < obj.output.text.length; i++) {
+                    //NotificationToast("sucess", obj.output.text[i], "Watson");
+
+                    appendMessage(false, obj.output.text[i]);
+                }
+
+                resetInputChat();
+
+            })
+                .done(function () {
+                    resetInputChat();
+                })
+                .fail(function (error) {
+                    resetInputChat();
+
+                    NotificationToast("error", error.statusText, "Error");
+                });
+
+        }
+
+        function resetInputChat() {
+            $("#textInput").prop("disabled", false);
+            $("#textInput").val(null);
+            $("#chat_loader").hide();
+            $("#textInput").focus();
+        }
+
+        function scrollToChatBottom() {
+            var scrollingChat = $('#scrollingChat');
+
+            // Scroll to the latest message sent by the user
+            var scrollEl = scrollingChat.querySelector(settings.selectors.fromUser
+                + settings.selectors.latest);
+            if (scrollEl) {
+                scrollingChat.scrollTop = scrollEl.offsetTop;
+            }
+        }
+
+        function appendMessage(isUser, message) {
+            var nombre = "Watson";
+            var clase = "direct-chat-msg";
+            var imagen = "/images/user1-128x128.jpg";
+            var alig1 = "left";
+            var alig2 = "right";
+
+            if (isUser) {
+                nombre = "Usuario";
+                clase = "direct-chat-msg right";
+                imagen = "/images/user3-128x128.jpg";
+                var alig1 = "right";
+                var alig2 = "left";
+            }
+
+            var hora = currentTime();
+
+            var element =   "<div class='" + clase + "'>" +
+                            "<div class='direct-chat-info clearfix'>" +
+                                "<span class='direct-chat-name pull-" + alig1 + "'>" + nombre + "</span>" +
+                                "<span class='direct-chat-timestamp pull-" + alig2 +"'>" + hora + "</span>" +
+                            "</div>" +
+                            "<img class='direct-chat-img' src='" + imagen + "' alt= '" + nombre + "'>" +
+                            "<div class='direct-chat-text'>" + message +
+                            "</div>" +
+                            "</div>"
+
+            $("#scrollingChat").append(element);
+
+            $("#scrollingChat").scrollTop($("#scrollingChat")[0].scrollHeight);
+        }
+
+        function currentTime() {
+            var now = new Date();
+            now = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+
+            return now;
+        }
+      
+
+    </script>
+}

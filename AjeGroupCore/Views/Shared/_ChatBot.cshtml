@@ -38,55 +38,33 @@
             <!-- /.box-header -->
             <div class="box-body">
                 <!-- Conversations are loaded here -->
-                <div class="direct-chat-messages">
-                    <!-- Message. Default to the left -->
-                    <div class="direct-chat-msg">
-                        <div class="direct-chat-info clearfix">
-                            <span class="direct-chat-name pull-left">Tony Stark</span>
-                            <span class="direct-chat-timestamp pull-right">23 Ene 2:00 pm</span>
-                        </div>
-                        <!-- /.direct-chat-info -->
-                        <img class="direct-chat-img" src="~/images/user1-128x128.jpg" alt="Message User Image"><!-- /.direct-chat-img -->
-                        <div class="direct-chat-text">
-                            Has visto mi traje!
-                        </div>
-                        <!-- /.direct-chat-text -->
-                    </div>
-                    <!-- /.direct-chat-msg -->
-                    <!-- Message to the right -->
-                    <div class="direct-chat-msg right">
-                        <div class="direct-chat-info clearfix">
-                            <span class="direct-chat-name pull-right">Viuda negra</span>
-                            <span class="direct-chat-timestamp pull-left">23 Ene 2:05 pm</span>
-                        </div>
-                        <!-- /.direct-chat-info -->
-                        <img class="direct-chat-img" src="~/images/user3-128x128.jpg" alt="Message User Image"><!-- /.direct-chat-img -->
-                        <div class="direct-chat-text">
-                            Lo envié a la lavandería!
-                        </div>
-                        <!-- /.direct-chat-text -->
-                    </div>
-                    <!-- /.direct-chat-msg -->
+                <div class="direct-chat-messages" id="scrollingChat">
+
                 </div>
                 <!--/.direct-chat-messages-->
                 <!-- /.direct-chat-pane -->
             </div>
             <!-- /.box-body -->
             <div class="box-footer">
-                <form action="#" method="post">
+                <form action="javascript:sendRequest()" method="post">
                     <div class="input-group">
                         <input id="textInput" type="text" name="message" placeholder="Escribir mensaje ..." 
-                               class="form-control"
-                               onkeydown="ConversationPanel.inputKeyDown(event, this)" />
+                               class="form-control" />
                         
                         <span class="input-group-btn">
-                            <button type="button" class="btn btn-primary btn-flat work-inprogress">Enviar</button>
+                            <button type="button" 
+                                    class="btn btn-primary btn-flat">Enviar</button>
                         </span>
                     </div>
                 </form>
+                <div id="chat_loader" style="display:none;">
+                    <img src="~/images/preloader.gif" alt="Pensando..." />
+                    <span>Pensando...</span>
+                </div>
             </div>
             <!-- /.box-footer-->
         </div>
     </section>
 
 <!--/.Chatbot-->
+

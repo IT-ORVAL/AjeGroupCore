@@ -21,7 +21,7 @@ namespace IBM.VCA.Watson.Watson.SpeechToText
 {
     public class Example
     {
-        static void Main(string[] args)
+        static void SpeechToText(string[] args)
         {
             string _username = "e195aa9f-57e4-4328-a815-f08311ad9b3f";
             string _password = "LVSk4sEVs2Iz";
