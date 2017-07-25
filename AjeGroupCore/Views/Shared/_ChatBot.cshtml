@@ -4,7 +4,9 @@
         <i class="fa fa-cloud"></i>
     </a>*@
 <div class="fixed-action-btn-chat" style="bottom: 10px; right: 24px;">
-    <a class="btn-floating btn-large blue waves-effect waves-light collapse-chat" data-original-title="Minimizar">
+    <a class="btn-floating btn-large blue waves-effect waves-light collapse-chat" 
+       data-original-title="Minimizar" data-toggle="tooltip" data-placement="left" 
+       title="Haga click aquí para conversar con nuestro asistente virtual...">
         <i class="fa fa-cloud"></i>
     </a>
 </div>
@@ -14,7 +16,7 @@
             <div class="box-header with-border">
                 <h3 class="box-title">AJE Group Chatbot</h3>
 
-                <div id="resetChat" class="btn-group">
+                @*<div id="resetChat" class="btn-group">
                     <button class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="fa fa-bars"></i> Menú
                     </button>
@@ -24,11 +26,11 @@
                             <i class="fa fa-question-circle"></i> Preguntas Frecuentes
                         </a>
                     </div>
-                </div>
+                </div>*@
 
 
                 <div class="box-tools pull-right">
-                    <span data-toggle="tooltip" class="badge bg-light-blue" data-original-title="3 Mensajes nuevos">3</span>
+                    <span id="countChats" data-toggle="tooltip" class="badge bg-light-blue" data-original-title="Mensajes nuevos">3</span>
 
                     <button type="button" class="btn btn-box-tool collapse-chat" data-original-title="Minimizar">
                         <i class="fa fa-minus"></i>
@@ -52,7 +54,7 @@
                                class="form-control" />
                         
                         <span class="input-group-btn">
-                            <button type="button" 
+                            <button type="submit" 
                                     class="btn btn-primary btn-flat">Enviar</button>
                         </span>
                     </div>

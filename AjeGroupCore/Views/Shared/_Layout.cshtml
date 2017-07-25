@@ -90,8 +90,8 @@
         <script src="~/lib/jquery/dist/jquery.js"></script>
 
         <script src="~/lib/tether.min.js"></script>
-        @*<script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>*@
-        <script src="~/lib/bootstrap.min.js"></script>
+        <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
+        @*<script src="~/lib/bootstrap.min.js"></script>*@
 
         <script src="~/lib/toastr.js"></script>
         <script src="~/lib/sweetalert.min.js"></script>
@@ -173,10 +173,17 @@
 
             $(".collapse-chat").click(function () {
                 $("#chatbot").toggle();
+                $("#textInput").focus();
             });
 
-            sendRequest(null);
+            $('[data-toggle="tooltip"]').tooltip(); 
+
+            sendRequest(true);
             $("#textInput").focus();
+
+            $("#scrollingChat").scroll(function () {
+                $("#countChats").text(0);
+            });
 
         }); //End Init
 

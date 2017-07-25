@@ -88,29 +88,41 @@
 
     <script type="text/javascript">
 
-        function sendRequest(msg) {
+        function sendRequest(init) {
             var url = "/Api/ChatBot/";
+            var msg = $("#textInput").val();
 
             $("#textInput").prop("disabled", true);
             $("#chat_loader").show();
 
-            if (msg === null || $("#textInput").val() == null) {
-                msg = 'welcome';
+            if (init) {
+                msg = 'hola';
             }
-            else {
-                msg = $("#textInput").val();
+            
+            if ($("#textInput").val() == "" && init == undefined) {
+                toastr.error("Debe ingresar un texto", "Error")
+                resetInputChat();
+                return;
+            }
+
+            if (init == false) {
                 appendMessage(true, msg);
             }
+
 
             $.post(url, { msg: msg }, function (result) {
                 //var obj = JSON.parse(JSON.stringify(result))
                 var obj = JSON.parse(result)
+                var total = obj.output.text.length;
 
-                for (var i = 0; i < obj.output.text.length; i++) {
+                for (var i = 0; i < total; i++) {
                     //NotificationToast("sucess", obj.output.text[i], "Watson");
 
                     appendMessage(false, obj.output.text[i]);
+
                 }
+
+                $("#countChats").text(total);
 
                 resetInputChat();
 
@@ -133,17 +145,7 @@
             $("#textInput").focus();
         }
 
-        function scrollToChatBottom() {
-            var scrollingChat = $('#scrollingChat');
-
-            // Scroll to the latest message sent by the user
-            var scrollEl = scrollingChat.querySelector(settings.selectors.fromUser
-                + settings.selectors.latest);
-            if (scrollEl) {
-                scrollingChat.scrollTop = scrollEl.offsetTop;
-            }
-        }
-
+      
         function appendMessage(isUser, message) {
             var nombre = "Watson";
             var clase = "direct-chat-msg";
@@ -174,6 +176,7 @@
             $("#scrollingChat").append(element);
 
             $("#scrollingChat").scrollTop($("#scrollingChat")[0].scrollHeight);
+
         }
 
         function currentTime() {
