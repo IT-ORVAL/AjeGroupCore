@@ -1,0 +1,36 @@
+﻿{
+  "cleardb": [
+    {
+      "credentials": {
+        "jdbcUrl": "jdbc:mysql://us-cdbr-sl-dfw-01.cleardb.net/ibmx_44839ba433db849?user=b226427a281885&password=f0842df9",
+        "uri": "mysql://b226427a281885:f0842df9@us-cdbr-sl-dfw-01.cleardb.net:3306/ibmx_44839ba433db849?reconnect=true",
+        "name": "ibmx_44839ba433db849",
+        "hostname": "us-cdbr-sl-dfw-01.cleardb.net",
+        "port": "3306",
+        "username": "b226427a281885",
+        "password": "f0842df9"
+      },
+      "syslog_drain_url": null,
+      "volume_mounts": [],
+      "label": "cleardb",
+      "provider": null,
+      "plan": "cb5",
+      "name": "ClearDB Managed MySQL Database-nz",
+      "tags": [
+        "Data Stores",
+        "DBA",
+        "(P) Analytics",
+        "(S) Cloud",
+        "Platform",
+        "Bluemix",
+        "ibm_dedicated_public",
+        "Infrastructure",
+        "Service",
+        "data_management",
+        "IT Operations",
+        "web and app",
+        "ibm_third_party"
+      ]
+    }
+  ]
+}
