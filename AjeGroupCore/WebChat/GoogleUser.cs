@@ -1,8 +1,11 @@
-﻿using Google.Apis.Admin.Directory.directory_v1;
+﻿using AjeGroupCore.Controllers;
+using Google.Apis.Admin.Directory.directory_v1;
 using Google.Apis.Admin.Directory.directory_v1.Data;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,14 +22,20 @@ namespace AjeGroupCore.WebChat
         private const string ClientSecretJsonFile = "AJE_Client_Secret.json";
         private const string GoogleFolder = "Google";
 
+
         public static string RunPasswordReset(string userEmailString, string userPassword)
         {
             string msg;
+            //var webRootInfo = _wwwRoot.WebRootPath;
+
 
             try
             {
-                //Set location for Google Token to be locally stored
-                var googleTokenLocation = Path.Combine(Environment.GetEnvironmentVariable("LocalAppData"), GoogleFolder);
+                ////Set location for Google Token to be locally stored
+                //var googleTokenLocation = Path.Combine(Environment.GetEnvironmentVariable("LocalAppData"), GoogleFolder);
+
+                var googleTokenLocation = Path.Combine(HomeController._wwwRoot.WebRootPath, GoogleFolder);
+
 
                 //Load the Client Configuration in JSON Format as a stream which is used for API Calls
                 var fileStream = new FileStream(ClientSecretJsonFile, FileMode.Open, FileAccess.Read);
@@ -76,10 +85,17 @@ namespace AjeGroupCore.WebChat
 
         public static bool IsEmailRegistered(string userEmailString)
         {
+
+            //var webRootInfo = _wwwRoot.WebRootPath;
+
+
             try
             {
-                //Set location for Google Token to be locally stored
-                var googleTokenLocation = Path.Combine(Environment.GetEnvironmentVariable("LocalAppData"), GoogleFolder);
+                ////Set location for Google Token to be locally stored
+                //var googleTokenLocation = Path.Combine(Environment.GetEnvironmentVariable("LocalAppData"), GoogleFolder);
+
+
+                var googleTokenLocation = Path.Combine(HomeController._wwwRoot.WebRootPath, GoogleFolder);
 
                 //Load the Client Configuration in JSON Format as a stream which is used for API Calls
                 var fileStream = new FileStream(ClientSecretJsonFile, FileMode.Open, FileAccess.Read);
@@ -113,6 +129,8 @@ namespace AjeGroupCore.WebChat
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
+
                 return false;
                 //Add you exception here
             }
