@@ -15,6 +15,10 @@
     <UserSecretsId>aspnet-AjeGroupCore-4ec60e75-f87e-442b-8f68-832335906a9a</UserSecretsId>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Properties\PublishProfiles\AjeGroupCore - Web Deploy.pubxml" />
+  </ItemGroup>
+
 
   <!--<ItemGroup>
     <Content Include="wwwroot\lib\GSuiteSDK.js" />
@@ -72,6 +76,9 @@
     <Content Update="AJE_Client_Secret.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
 
 </Project>
