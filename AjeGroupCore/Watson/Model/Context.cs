@@ -36,26 +36,29 @@ namespace IBM.VCA.Watson.Watson.Model
         [JsonProperty("system")]
         public SystemResponse System { get; set; }
 
+
+
+
         [JsonProperty("temperature")]
         public string Temperature { get; set; }
 
         [JsonProperty("city")]
         public string City { get; set; }
-
-        [JsonProperty("description")]
-        public string Description { get; set; }
-
-        [JsonProperty("servicio")]
-        public string Servicio { get; set; }
-
-        [JsonProperty("codigo")]
-        public string Codigo { get; set; }
-
-        [JsonProperty("mobile")]
-        public string Mobile { get; set; }
+        
+        
+        //AJE Group Google Email Reset Password
 
         [JsonProperty("action")]
         public string Action { get; set; }
+
+        [JsonProperty("password")]
+        public string Password { get; set; }
+
+        [JsonProperty("email")]
+        public string Email { get; set; }
+
+        [JsonProperty("valid")]
+        public bool Valid { get; set; }
 
     }
 }

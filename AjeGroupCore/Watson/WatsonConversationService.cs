@@ -115,7 +115,7 @@ namespace IBM.VCA.Watson.Watson
 
                 messageRequest.Context.City = city;
                 messageRequest.Context.Temperature = temperature;
-                messageRequest.Context.Description = description;
+                //messageRequest.Context.Description = description;
 
                 string forecast =
                     "<div id='weather_widget' class='weather_widget'>" +

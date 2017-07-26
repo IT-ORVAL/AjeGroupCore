@@ -45,10 +45,10 @@ namespace AjeGroupCore.Controllers
         public async Task<IActionResult> Index(ManageMessageId? message = null)
         {
             ViewData["StatusMessage"] =
-                message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
-                : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
+                message == ManageMessageId.ChangePasswordSuccess ? "Su Clave ha sido actualizada"
+                : message == ManageMessageId.SetPasswordSuccess ? "Se ha registrado su Clave"
                 : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
-                : message == ManageMessageId.Error ? "An error has occurred."
+                : message == ManageMessageId.Error ? "Ha ocurrido un error"
                 : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
                 : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
                 : "";
@@ -281,9 +281,9 @@ namespace AjeGroupCore.Controllers
         public async Task<IActionResult> ManageLogins(ManageMessageId? message = null)
         {
             ViewData["StatusMessage"] =
-                message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
-                : message == ManageMessageId.AddLoginSuccess ? "The external login was added."
-                : message == ManageMessageId.Error ? "An error has occurred."
+                message == ManageMessageId.RemoveLoginSuccess ? "Se eliminó la cuenta"
+                : message == ManageMessageId.AddLoginSuccess ? "Se agregó la cuenta"
+                : message == ManageMessageId.Error ? "Ha ocurrido un error"
                 : "";
             var user = await GetCurrentUserAsync();
             if (user == null)

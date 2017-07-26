@@ -25,8 +25,32 @@ namespace AjeGroupCore.WebChat
         };
 
         [HttpPost]
-        public JsonResult MessageChat(string msg)
+        public JsonResult MessageChat(string msg, bool isInit, bool isValid)
         {
+            if (isInit)
+            {
+                context = null;
+            }
+
+            if (context != null)
+            {
+                context.Valid = isValid;
+
+                if (context.Action == "email")
+                {
+                    if (!GoogleUser.IsEmailRegistered(msg))
+                    {
+                        context.Valid = false;
+                    }
+                }
+
+                if (context.Action == "confirmation" && context.Valid == true && context.Password != null)
+                {
+                    string goog = GoogleUser.RunPasswordReset(context.Email, context.Password);
+                }
+            }
+                      
+
             MessageRequest result = Message(msg, context, credentials);
 
             context = result.Context;

@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using AjeGroupCore.Data;
 using AjeGroupCore.Models;
 using AjeGroupCore.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AjeGroupCore
 {
@@ -43,11 +44,26 @@ namespace AjeGroupCore
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.Configure<IdentityOptions>(options =>
+            {
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 5;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            });
+
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
             services.AddMvc();
+
+            //services.AddMvc(options =>
+            //{
+            //    options.SslPort = 44321;
+            //    options.Filters.Add(new RequireHttpsAttribute());
+            //});
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -76,6 +92,17 @@ namespace AjeGroupCore
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see https://go.microsoft.com/fwlink/?LinkID=532715
+            app.UseGoogleAuthentication(new GoogleOptions()
+            {
+                ClientId = "876142884435-h1fj3n12pcboe58tastr040s6422oarc.apps.googleusercontent.com",
+                ClientSecret = "Y-Spk97cPYcTZIe57yEWtVgd"
+            });
+
+            app.UseFacebookAuthentication(new FacebookOptions()
+            {
+                AppId = "235008923608113",
+                AppSecret = "2b5dd1d61080a8ecbb8b919eaa889649"
+            });
 
             app.UseMvc(routes =>
             {
