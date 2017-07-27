@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace EntelMvcAPI.FacebookChat.TemplatesFB.AttachmentFB
+namespace FacebookAPI.FacebookChat.TemplatesFB.AttachmentFB
 {
 
     public class AttachmentTemplate

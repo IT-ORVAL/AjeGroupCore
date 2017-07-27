@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace EntelMvcAPI.FacebookChat.TemplatesFB.QuickRepliesFB
+namespace FacebookAPI.FacebookChat.TemplatesFB.QuickRepliesFB
 {
     public class QuickRepliesTemplate
     {

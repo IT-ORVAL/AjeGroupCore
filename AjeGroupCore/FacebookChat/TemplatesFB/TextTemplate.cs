@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace EntelMvcAPI.FacebookChat.TemplatesFB.TextFB
+namespace FacebookAPI.FacebookChat.TemplatesFB.TextFB
 {
 
     public class TextTemplate

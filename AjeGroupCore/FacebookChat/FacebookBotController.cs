@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
 using Newtonsoft.Json;
-using EntelMvcAPI.FacebookChat.TemplatesFB.TextFB;
+using FacebookAPI.FacebookChat.TemplatesFB.TextFB;
 using System.Net;
 using System.IO;
 using System.Text;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Http;
 using System.Net.Http;
 using System.Collections.Generic;
 
-namespace EntelMvcAPI.FacebookChat
+namespace FacebookAPI.FacebookChat
 {
     public class FacebookBotController : Controller
     {
