@@ -10,12 +10,22 @@ using System.Text;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http;
 using System.Collections.Generic;
+using IBM.VCA.Watson.Watson.Model;
+using static IBM.VCA.Watson.Watson.WatsonConversationService;
 
 namespace EntelMvcAPI.FacebookChat
 {
     public class FacebookBotController : Controller
     {
-        
+        static Context context;
+
+        private WatsonCredentials credentials = new WatsonCredentials()
+        {
+            workspaceID = "89fd0c87-c437-4573-9c87-c0d31e721cc8",
+            username = "7ecc7e1d-b7a9-472b-9419-a7254411cdd5",
+            password = "HQJwcbFZclYL"
+        };
+
         public ActionResult Receive()
         {
             var query = HttpContext.Request.Query;
@@ -76,7 +86,15 @@ namespace EntelMvcAPI.FacebookChat
                             }
 
 
-                            PostJsonAsync(GetTextFB(message.sender.id, "Hola desde AjeGroup Core API para Facebook!"));
+                            MessageRequest result = Message(msg, context, credentials);
+
+                            context = result.Context;
+
+                            foreach (string item in result.Output.Text)
+                            {
+                                PostJsonAsync(GetTextFB(message.sender.id, item));
+                            }
+
                         }
 
                     }

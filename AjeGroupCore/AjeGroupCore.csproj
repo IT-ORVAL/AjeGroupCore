@@ -19,8 +19,17 @@
     <None Remove="Properties\PublishProfiles\AjeGroupCore - Web Deploy.pubxml" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="wwwroot\html\ExampleFrame.html" />
+    <Content Include="wwwroot\html\iFrameChatBot.cshtml" />
+    <Content Include="wwwroot\js\chatbot-vca.js" />
+    <Content Include="wwwroot\js\reniec-vca.js" />
+  </ItemGroup>
+
+
 
   <!--<ItemGroup>
+      <Content Include="wwwroot\ExampleFrame.html" />
     <Content Include="wwwroot\lib\GSuiteSDK.js" />
     <Content Include="wwwroot\css\bootstrap.min.css" />
     <Content Include="wwwroot\css\chatbot.css" />
@@ -79,6 +88,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="WebChat\Weather\icons\01d.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

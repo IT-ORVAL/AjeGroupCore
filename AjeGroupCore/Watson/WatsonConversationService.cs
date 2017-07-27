@@ -2,6 +2,7 @@
 using IBM.VCA.Watson.Watson.Model;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using IBM.VCA.WebChat.Weather;
 
 namespace IBM.VCA.Watson.Watson
 {

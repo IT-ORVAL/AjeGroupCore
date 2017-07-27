@@ -1,4 +1,4 @@
-﻿namespace IBM.VCA.Watson.Model.Custom.Weather
+﻿namespace IBM.VCA.WebChat.Weather
 {
    
     //********************* WEATHER MODEL *********************

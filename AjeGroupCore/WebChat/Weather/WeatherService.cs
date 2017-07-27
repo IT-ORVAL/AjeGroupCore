@@ -1,5 +1,4 @@
-﻿using IBM.VCA.Watson.Model.Custom.Weather;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace IBM.VCA.Watson.Watson
+namespace IBM.VCA.WebChat.Weather
 {
 
     public class WeatherService
@@ -28,6 +27,7 @@ namespace IBM.VCA.Watson.Watson
             {
                 city_name = city;
             }
+
             string path2 = string.Format("weather?q={0},{1}&APPID={2}&units=metric&lang=es", city_name, country_code, weather_api);
 
             using (var client = new HttpClient())

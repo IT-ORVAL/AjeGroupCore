@@ -1,5 +1,42 @@
 ﻿// Write your Javascript code.
 
+$(function () {
+
+    $('.active-notification').on('click', function () {
+        var msg = $(this).text();
+
+        toastr.info(msg)
+    });
+
+    $('.work-inprogress').on('click', function () {
+        swal("En desarrollo!", "Estamos trabajando en esta funcionalidad", "info")
+    });
+
+    $(".collapse-chat").click(function () {
+        $("#chatbot").toggle();
+        $("#textInput").focus();
+    });
+
+    $('[data-toggle="tooltip"]').tooltip();
+
+    sendRequest(true);
+    $("#textInput").focus();
+
+    $("#scrollingChat").scroll(function () {
+        $("#countChats").text(0);
+    });
+
+}); //End Init
+
+
+function currentTime() {
+    var now = new Date();
+    now = now.getHours() + ':' + now.getMinutes() + ':' + now.getSeconds();
+
+    return now;
+}
+
+
 function NotificationToast(type, message, title) {
     toastr.options = {
         "closeButton": true,

@@ -7,6 +7,7 @@ using IBM.VCA.Watson.Watson;
 using IBM.VCA.Watson.Watson.Model;
 using static IBM.VCA.Watson.Watson.WatsonConversationService;
 using Newtonsoft.Json;
+using IBM.VCA.WebChat.Weather;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -25,11 +26,15 @@ namespace AjeGroupCore.WebChat
         };
 
         [HttpPost]
-        public JsonResult MessageChat(string msg, bool isInit, bool isValid)
+        public async Task<JsonResult> MessageChatAsync(string msg, bool isInit, bool isValid)
         {
+            string _forecast = null;
+
             if (isInit)
             {
                 context = null;
+
+                _forecast = await CallWeatherAsync(null, null);
             }
 
             if (context != null)
@@ -49,17 +54,50 @@ namespace AjeGroupCore.WebChat
                     string goog = GoogleUser.RunPasswordReset(context.Email, context.Password);
                 }
             }
-                      
+
 
             MessageRequest result = Message(msg, context, credentials);
 
             context = result.Context;
+
+            if (!string.IsNullOrEmpty(_forecast))
+            {
+                result.Output.Text.Add(_forecast);
+            }
 
             var json = JsonConvert.SerializeObject(result);
 
             return Json(json);
         }
 
+
+        private async Task<string> CallWeatherAsync(string city, string date)
+        {
+            var result = await WeatherService.GetWeatherAsync(city, date);
+            string _forecast = null;
+
+            if (result != null)
+            {
+
+                string _temperature = result.main.temp.ToString();
+                string _city = result.name;
+                string _description = result.weather[0].description;
+                string _urlIcon = string.Format("../WebChat/Weather/icons/{0}.png", result.weather[0].icon);
+
+
+                _forecast =
+                    "<div id='weather_widget' class='weather_widget'>" +
+                    "<div id= 'weather_widget_city_name' class='weather_widget_city_name'>Clima de " + city + "</div>" +
+                    "<h3 id= 'weather_widget_temperature' class='weather_widget_temperature'>" +
+                    "<img src='" + _urlIcon + "'> " + _temperature + "°C</h3>" +
+                    "<div id='weather_widget_main' class='weather_widget_main'>" + _description + "</div>";
+
+
+            }
+
+            return _forecast;
+
+        }
 
     }
 }

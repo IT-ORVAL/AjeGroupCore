@@ -77,3 +77,11 @@ textarea {
 .trame {
     background: transparent url(../images/trame.png) repeat left top;
 }
+
+iframe:focus {
+    outline: none;
+}
+
+iframe[seamless] {
+    display: block;
+}

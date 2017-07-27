@@ -1,4 +1,4 @@
-﻿namespace IBM.VCA.Watson.Watson.Model.Custom.Forecast
+﻿namespace IBM.VCA.WebChat.Forecast
 {
     //********************* FORECAST MODEL *********************
 

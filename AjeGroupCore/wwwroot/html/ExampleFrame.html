@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>AJE Group ChatBot</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="../lib/bootstrap/dist/css/bootstrap.css" />
+    
+    <link rel="stylesheet" href="../css/chatbot.css">
+    <link rel="stylesheet" href="../WebChat/Weather/weather.css"/>
+
+    <link rel="stylesheet" href="../css/toastr.min.css">
+    <link rel="stylesheet" href="../css/sweetalert.css">
+
+    <link rel="stylesheet" href="../css/site.css" />
+
+
+</head>
+<body style="background-color: transparent;">
+    <div class="fixed-action-btn-chat" style="bottom: 10px; right: 24px;">
+        <a class="btn-floating btn-large blue waves-effect waves-light collapse-chat"
+           data-original-title="Minimizar" data-toggle="tooltip" data-placement="left"
+           title="Haga click aquí para conversar con nuestro asistente virtual...">
+            <i class="fa fa-cloud"></i>
+        </a>
+    </div>
+
+    <section id="chatbot" style="display:none;">
+        <div class="box box-primary direct-chat direct-chat-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">AJE Group Chatbot</h3>
+
+
+                <div class="box-tools pull-right">
+                    <span id="countChats" data-toggle="tooltip" class="badge bg-light-blue" data-original-title="Mensajes nuevos">3</span>
+
+                    <button type="button" class="btn btn-box-tool collapse-chat" data-original-title="Minimizar">
+                        <i class="fa fa-minus"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <!-- Conversations are loaded here -->
+                <div class="direct-chat-messages" id="scrollingChat">
+
+                </div>
+                <!--/.direct-chat-messages-->
+                <!-- /.direct-chat-pane -->
+            </div>
+            <!-- /.box-body -->
+            <div class="box-footer">
+                <form action="javascript:sendRequest()" method="post">
+                    <div class="input-group">
+                        <input id="textInput" type="text" name="message" placeholder="Escribir mensaje ..."
+                               class="form-control" />
+
+                        <span class="input-group-btn">
+                            <button type="submit"
+                                    class="btn btn-primary btn-flat">
+                                Enviar
+                            </button>
+                        </span>
+                    </div>
+                </form>
+                <div id="chat_loader" style="display:none;">
+                    <img src="../images/preloader.gif" alt="Pensando..." />
+                    <span>Pensando...</span>
+                </div>
+            </div>
+            <!-- /.box-footer-->
+        </div>
+    </section>
+
+
+    <script src="../lib/jquery/dist/jquery.js"></script>
+    <script src="../lib/tether.min.js"></script>
+
+    <script src="../lib/bootstrap/dist/js/bootstrap.js"></script>
+
+    <script src="../lib/toastr.js"></script>
+    <script src="../lib/sweetalert.min.js"></script>
+
+    <script src="../js/site.js"></script>
+    <script src="../js/chatbot-vca.js"></script>
+
+
+</body>
+</html>

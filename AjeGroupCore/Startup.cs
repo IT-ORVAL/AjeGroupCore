@@ -13,6 +13,9 @@ using AjeGroupCore.Data;
 using AjeGroupCore.Models;
 using AjeGroupCore.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace AjeGroupCore
 {
@@ -88,6 +91,13 @@ namespace AjeGroupCore
             }
 
             app.UseStaticFiles();
+
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileProvider = new PhysicalFileProvider(
+                    Path.Combine(Directory.GetCurrentDirectory(), @"WebChat")),
+                    RequestPath = new PathString("/WebChat")
+            });
 
             app.UseIdentity();
 
