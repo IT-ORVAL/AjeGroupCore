@@ -3,30 +3,21 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
 using Newtonsoft.Json;
-using EntelMvcAPI.FacebookChat.TemplatesFB.TextFB;
+using FacebookAPI.FacebookChat.TemplatesFB.TextFB;
 using System.Net;
 using System.IO;
 using System.Text;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http;
 using System.Collections.Generic;
-using IBM.VCA.Watson.Watson.Model;
-using static IBM.VCA.Watson.Watson.WatsonConversationService;
 
-namespace EntelMvcAPI.FacebookChat
+namespace FacebookAPI.FacebookChat
 {
+    [Route("api/[controller]")]
     public class FacebookBotController : Controller
     {
-        static Context context;
-
-        private WatsonCredentials credentials = new WatsonCredentials()
-        {
-            workspaceID = "89fd0c87-c437-4573-9c87-c0d31e721cc8",
-            username = "7ecc7e1d-b7a9-472b-9419-a7254411cdd5",
-            password = "HQJwcbFZclYL"
-        };
-
-        public ActionResult Receive()
+        [HttpGet]
+        public ActionResult WebHook()
         {
             var query = HttpContext.Request.Query;
 
@@ -50,12 +41,11 @@ namespace EntelMvcAPI.FacebookChat
         }
 
 
-        [ActionName("Receive")]
         [HttpPost]
-        public ActionResult ReceivePost(BotRequest data)
+        public ActionResult WebHook([FromBody] BotRequest data)
         {
 
-            if (data.entry.Count == 0)
+           if (data.entry.Count == 0)
             {
                 return new StatusCodeResult(StatusCodes.Status204NoContent);
             }
@@ -86,15 +76,7 @@ namespace EntelMvcAPI.FacebookChat
                             }
 
 
-                            MessageRequest result = Message(msg, context, credentials);
-
-                            context = result.Context;
-
-                            foreach (string item in result.Output.Text)
-                            {
-                                PostJsonAsync(GetTextFB(message.sender.id, item));
-                            }
-
+                            PostJsonAsync(GetTextFB(message.sender.id, "Hola desde AjeGroup Core API para Facebook!"));
                         }
 
                     }
@@ -184,7 +166,7 @@ namespace EntelMvcAPI.FacebookChat
 
         }
 
-        public TextTemplate GetTextFB(string senderId, string senderText)
+        private TextTemplate GetTextFB(string senderId, string senderText)
         {
 
             TextTemplate model = new TextTemplate()
@@ -203,7 +185,7 @@ namespace EntelMvcAPI.FacebookChat
         }
 
 
-        public static void HandleDeserializationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs errorArgs)
+        private static void HandleDeserializationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs errorArgs)
         {
             var currentError = errorArgs.ErrorContext.Error.Message;
             errorArgs.ErrorContext.Handled = true;

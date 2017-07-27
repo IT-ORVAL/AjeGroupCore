@@ -139,7 +139,34 @@ namespace AjeGroupCore.WebChat
         }
 
 
+        public static string GenerateVerificationCode(string userKey)
+        {
+            var googleTokenLocation = Path.Combine(HomeController._wwwRoot.WebRootPath, GoogleFolder);
+            var fileStream = new FileStream(ClientSecretJsonFile, FileMode.Open, FileAccess.Read);
 
+            var credentials = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                GoogleClientSecrets.Load(fileStream).Secrets,
+                Scopes,
+                "user",
+                CancellationToken.None,
+              new FileDataStore(googleTokenLocation)).Result;
+
+            var _service = new DirectoryService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credentials,
+                ApplicationName = ApplicationName,
+            });
+
+            var generateVerificationCodesRequest = _service.VerificationCodes.Generate(userKey);
+            generateVerificationCodesRequest.Execute();
+
+            var verificationCodesRequest = _service.VerificationCodes.List(userKey);
+            var verificationCodes = verificationCodesRequest.Execute();
+
+            var verificationCode = verificationCodes.Items[0].VerificationCodeValue;
+
+            return verificationCode;
+        }
 
     }
 }
