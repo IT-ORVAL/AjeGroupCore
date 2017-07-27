@@ -13,10 +13,11 @@ using System.Collections.Generic;
 
 namespace FacebookAPI.FacebookChat
 {
+    [Route("api/[controller]")]
     public class FacebookBotController : Controller
     {
-        
-        public ActionResult Receive()
+        [HttpGet]
+        public ActionResult WebHook()
         {
             var query = HttpContext.Request.Query;
 
@@ -40,12 +41,11 @@ namespace FacebookAPI.FacebookChat
         }
 
 
-        [ActionName("Receive")]
         [HttpPost]
-        public ActionResult ReceivePost(BotRequest data)
+        public ActionResult WebHook([FromBody] BotRequest data)
         {
 
-            if (data.entry.Count == 0)
+           if (data.entry.Count == 0)
             {
                 return new StatusCodeResult(StatusCodes.Status204NoContent);
             }
@@ -166,7 +166,7 @@ namespace FacebookAPI.FacebookChat
 
         }
 
-        public TextTemplate GetTextFB(string senderId, string senderText)
+        private TextTemplate GetTextFB(string senderId, string senderText)
         {
 
             TextTemplate model = new TextTemplate()
@@ -185,7 +185,7 @@ namespace FacebookAPI.FacebookChat
         }
 
 
-        public static void HandleDeserializationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs errorArgs)
+        private static void HandleDeserializationError(object sender, Newtonsoft.Json.Serialization.ErrorEventArgs errorArgs)
         {
             var currentError = errorArgs.ErrorContext.Error.Message;
             errorArgs.ErrorContext.Handled = true;
