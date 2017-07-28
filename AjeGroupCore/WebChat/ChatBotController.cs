@@ -8,6 +8,7 @@ using IBM.VCA.Watson.Watson.Model;
 using static IBM.VCA.Watson.Watson.WatsonConversationService;
 using Newtonsoft.Json;
 using IBM.VCA.WebChat.Weather;
+using static AjeGroupCore.WebChat.GoogleUser;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -29,6 +30,7 @@ namespace AjeGroupCore.WebChat
         public async Task<JsonResult> MessageChatAsync(string msg, bool isInit, bool isValid)
         {
             string _forecast = null;
+            string _attachment = null;
 
             if (isInit)
             {
@@ -43,9 +45,24 @@ namespace AjeGroupCore.WebChat
 
                 if (context.Action == "email")
                 {
-                    if (!GoogleUser.IsEmailRegistered(msg))
+                    MyGoogleUserInfo _userinfo = GoogleUser.GetGoogleUserInfo(msg);
+
+                    //if (!GoogleUser.IsEmailRegistered(msg))
+                    //{
+                    //    context.Valid = false;
+                    //}
+
+                    if (_userinfo == null)
                     {
                         context.Valid = false;
+                        //context = null;
+                    }
+                    else
+                    {
+                        context.UserName = _userinfo.GivenName;
+
+                        _attachment = "<a class='btn btn-default' href=javascript:getGoogleUserInfo('" +
+                          msg + "');>Ver datos</a>";
                     }
                 }
 
@@ -53,6 +70,7 @@ namespace AjeGroupCore.WebChat
                 {
                     string goog = GoogleUser.RunPasswordReset(context.Email, context.Password);
                 }
+
             }
 
 
@@ -63,6 +81,21 @@ namespace AjeGroupCore.WebChat
             if (!string.IsNullOrEmpty(_forecast))
             {
                 result.Output.Text.Add(_forecast);
+            }
+
+
+            if (context.Action == "success")
+            {
+                _attachment = "<a class='btn btn-default' href=javascript:getGoogleUserInfo('" +
+                      context.Email + "');>Ver datos</a>";
+                _attachment = _attachment + "<br />";
+                _attachment = _attachment + "<a class='btn btn-default' href=javascript:getGoogleTokens('" +
+                       context.Email + "');>Generar Tokens</a>";
+            }
+
+            if (!string.IsNullOrEmpty(_attachment))
+            {
+                result.Output.Text.Add(_attachment);
             }
 
             var json = JsonConvert.SerializeObject(result);
@@ -82,7 +115,7 @@ namespace AjeGroupCore.WebChat
                 string _temperature = result.main.temp.ToString();
                 string _city = result.name;
                 string _description = result.weather[0].description;
-                string _urlIcon = string.Format("../WebChat/Weather/icons/{0}.png", result.weather[0].icon);
+                string _urlIcon = string.Format("../images/icons/{0}.png", result.weather[0].icon);
 
 
                 _forecast =

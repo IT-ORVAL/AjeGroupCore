@@ -19,7 +19,7 @@ function sendRequest(init) {
         return;
     }
 
-    if (init != true) {
+    if (init !== true) {
         if (_contextAction === false || _contextAction === undefined) {
             appendMessage(true, msg);
         }
@@ -51,8 +51,10 @@ function sendRequest(init) {
     }
 
     if (_contextAction === "confirmation") {
-        if (_password != msg) {
+        if (_password !== msg) {
             NotificationToast("error", "La confirmación no coincide con la clave. Intente de nuevo", "Error");
+
+            _contextAction = "email";
             valid = false;
         }
         else {
@@ -79,15 +81,27 @@ function sendRequest(init) {
 
         $("#countChats").text(total);
 
-        resetInputChat();
-
         if (_contextAction === "password" || _contextAction === "confirmation") {
             $("#textInput").attr("type", "password");
         }
+        else {
+            $("#textInput").attr("type", "text");
+
+        }
+
+
+        //if (_contextAction === "password" || _contextAction === "success") {
+        //    getGoogleUserInfo(obj.context.email);
+        //}
+
+
+
+        resetInputChat();
 
     })
         .done(function () {
             resetInputChat();
+
         })
         .fail(function (error) {
             resetInputChat();
@@ -102,8 +116,10 @@ function resetInputChat() {
     $("#textInput").val(null);
     $("#chat_loader").hide();
 
-    $("#textInput").attr("type", "text");
     $("#textInput").focus();
+
+    $("#scrollingChat").scrollTop($("#scrollingChat")[0].scrollHeight);
+
 }
 
 
@@ -118,8 +134,8 @@ function appendMessage(isUser, message) {
         nombre = "Usuario";
         clase = "direct-chat-msg right";
         imagen = "/images/user3-128x128.jpg";
-        var alig1 = "right";
-        var alig2 = "left";
+        alig1 = "right";
+        alig2 = "left";
     }
 
     var hora = currentTime();
@@ -136,7 +152,53 @@ function appendMessage(isUser, message) {
 
     $("#scrollingChat").append(element);
 
-    $("#scrollingChat").scrollTop($("#scrollingChat")[0].scrollHeight);
 
 }
 
+function getGoogleUserInfo(_myUserEmail) {
+
+    if (_myUserEmail === null || _myUserEmail === undefined) {
+        return;
+    }
+
+    var url = "/Home/GetGoogleUserInfoTask/";
+
+    $.post(url, { userEmail: _myUserEmail }, function (result) {
+        var obj = JSON.parse(result)
+        var _text = JSON.stringify(result);
+
+        swal({
+            title: "Datos Usuario",
+            text: "<div style='word-wrap: break-word;'>" + result + "</div>",
+            html: true,
+            type: "info"
+        });
+
+    })
+        .done(function () {
+
+        })
+        .fail(function (error) {
+            NotificationToast("error", error.statusText, "Error");
+        });
+}
+
+function getGoogleTokens(_myUserEmail) {
+    if (_myUserEmail === null || _myUserEmail === undefined) {
+        return;
+    }
+
+    var url = "/Home/GetGoogleTokensTask/";
+
+    $.post(url, { userEmail: _myUserEmail }, function (result) {
+        getGoogleUserInfo(_myUserEmail);
+
+    })
+        .done(function () {
+
+        })
+        .fail(function (error) {
+            NotificationToast("error", error.statusText, "Error");
+        });
+
+}

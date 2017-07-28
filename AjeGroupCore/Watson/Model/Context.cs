@@ -60,5 +60,9 @@ namespace IBM.VCA.Watson.Watson.Model
         [JsonProperty("valid")]
         public bool Valid { get; set; }
 
+
+        [JsonProperty("username")]
+        public string UserName { get; set; }
+
     }
 }

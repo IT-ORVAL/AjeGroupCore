@@ -20,15 +20,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="wwwroot\js\reniec-vca - Copy.js" />
+  </ItemGroup>
+
+
+  <!--<ItemGroup>
     <Content Include="wwwroot\html\ExampleFrame.html" />
     <Content Include="wwwroot\html\iFrameChatBot.cshtml" />
     <Content Include="wwwroot\js\chatbot-vca.js" />
     <Content Include="wwwroot\js\reniec-vca.js" />
-  </ItemGroup>
 
-
-
-  <!--<ItemGroup>
       <Content Include="wwwroot\ExampleFrame.html" />
     <Content Include="wwwroot\lib\GSuiteSDK.js" />
     <Content Include="wwwroot\css\bootstrap.min.css" />
@@ -79,10 +80,28 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="wwwroot\images\icons\01d.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\images\icons\01n.png" />
+    <None Include="wwwroot\images\icons\02d.png" />
+    <None Include="wwwroot\images\icons\02n.png" />
+    <None Include="wwwroot\images\icons\03d.png" />
+    <None Include="wwwroot\images\icons\03n.png" />
+    <None Include="wwwroot\images\icons\04d.png" />
+    <None Include="wwwroot\images\icons\04n.png" />
+    <None Include="wwwroot\images\icons\09d.png" />
+    <None Include="wwwroot\images\icons\09n.png" />
+    <None Include="wwwroot\images\icons\10d.png" />
+    <None Include="wwwroot\images\icons\10n.png" />
     <None Include="wwwroot\images\preloader.gif" />
+    <None Include="wwwroot\css\weather.css" />
   </ItemGroup>
   <ItemGroup>
     <Content Update="AJE_Client_Secret.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="DOP_Client_Secret.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

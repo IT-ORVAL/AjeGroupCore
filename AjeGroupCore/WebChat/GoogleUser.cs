@@ -17,43 +17,24 @@ namespace AjeGroupCore.WebChat
 {
     public class GoogleUser
     {
-        static readonly string[] Scopes = { DirectoryService.Scope.AdminDirectoryUser };
-        private const string ApplicationName = "AJE Group ChatBot";
-        private const string ClientSecretJsonFile = "AJE_Client_Secret.json";
+        static readonly string[] Scopes = { DirectoryService.Scope.AdminDirectoryUser, DirectoryService.Scope.AdminDirectoryUserSecurity };
+
+        //private const string ApplicationName = "AJE Group ChatBot";
+        //private const string ClientSecretJsonFile = "AJE_Client_Secret.json";
+        //private const string GoogleFolder = "Google";
+
+        private const string ApplicationName = "Data One Peru";
+        private const string ClientSecretJsonFile = "DOP_Client_Secret.json";
         private const string GoogleFolder = "Google";
 
 
         public static string RunPasswordReset(string userEmailString, string userPassword)
         {
             string msg;
-            //var webRootInfo = _wwwRoot.WebRootPath;
-
 
             try
             {
-                ////Set location for Google Token to be locally stored
-                //var googleTokenLocation = Path.Combine(Environment.GetEnvironmentVariable("LocalAppData"), GoogleFolder);
-
-                var googleTokenLocation = Path.Combine(HomeController._wwwRoot.WebRootPath, GoogleFolder);
-
-
-                //Load the Client Configuration in JSON Format as a stream which is used for API Calls
-                var fileStream = new FileStream(ClientSecretJsonFile, FileMode.Open, FileAccess.Read);
-
-                //This will create a Token Response User File on the GoogleFolder indicated on your Application
-                var credentials = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(fileStream).Secrets,
-                    Scopes,
-                    "user",
-                    CancellationToken.None,
-                  new FileDataStore(googleTokenLocation)).Result;
-
-                //Create Directory API service.
-                var directoryService = new DirectoryService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = credentials,
-                    ApplicationName = ApplicationName
-                });
+                DirectoryService directoryService = GetGoogleDirectoryService();
 
                 //Email is considered the Primary on Google Accoutns
                 var userkey = userEmailString;
@@ -75,7 +56,6 @@ namespace AjeGroupCore.WebChat
             catch (Exception ex)
             {
                 msg = ex.Message;
-                //Add you exception here
             }
 
             return msg;
@@ -86,34 +66,9 @@ namespace AjeGroupCore.WebChat
         public static bool IsEmailRegistered(string userEmailString)
         {
 
-            //var webRootInfo = _wwwRoot.WebRootPath;
-
-
             try
             {
-                ////Set location for Google Token to be locally stored
-                //var googleTokenLocation = Path.Combine(Environment.GetEnvironmentVariable("LocalAppData"), GoogleFolder);
-
-
-                var googleTokenLocation = Path.Combine(HomeController._wwwRoot.WebRootPath, GoogleFolder);
-
-                //Load the Client Configuration in JSON Format as a stream which is used for API Calls
-                var fileStream = new FileStream(ClientSecretJsonFile, FileMode.Open, FileAccess.Read);
-
-                //This will create a Token Response User File on the GoogleFolder indicated on your Application
-                var credentials = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(fileStream).Secrets,
-                    Scopes,
-                    "user",
-                    CancellationToken.None,
-                  new FileDataStore(googleTokenLocation)).Result;
-
-                //Create Directory API service.
-                var directoryService = new DirectoryService(new BaseClientService.Initializer()
-                {
-                    HttpClientInitializer = credentials,
-                    ApplicationName = ApplicationName
-                });
+                DirectoryService directoryService = GetGoogleDirectoryService();
 
                 //Email is considered the Primary on Google Accoutns
                 var userkey = userEmailString;
@@ -139,34 +94,162 @@ namespace AjeGroupCore.WebChat
         }
 
 
-        public static string GenerateVerificationCode(string userKey)
+        public static MyGoogleUserInfo GetGoogleUserInfo(string userEmailString)
         {
-            var googleTokenLocation = Path.Combine(HomeController._wwwRoot.WebRootPath, GoogleFolder);
-            var fileStream = new FileStream(ClientSecretJsonFile, FileMode.Open, FileAccess.Read);
 
-            var credentials = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                GoogleClientSecrets.Load(fileStream).Secrets,
-                Scopes,
-                "user",
-                CancellationToken.None,
-              new FileDataStore(googleTokenLocation)).Result;
-
-            var _service = new DirectoryService(new BaseClientService.Initializer()
+            try
             {
-                HttpClientInitializer = credentials,
-                ApplicationName = ApplicationName,
-            });
+                DirectoryService directoryService = GetGoogleDirectoryService();
 
-            var generateVerificationCodesRequest = _service.VerificationCodes.Generate(userKey);
-            generateVerificationCodesRequest.Execute();
+                //Email is considered the Primary on Google Accoutns
+                var userkey = userEmailString;
 
-            var verificationCodesRequest = _service.VerificationCodes.List(userKey);
-            var verificationCodes = verificationCodesRequest.Execute();
+                UsersResource.GetRequest getUser = directoryService.Users.Get(userkey);
+                User _user = getUser.Execute();
 
-            var verificationCode = verificationCodes.Items[0].VerificationCodeValue;
+                
 
-            return verificationCode;
+                IList<VerificationCode> _verificationCodes = GetVerificationCodes(userkey);
+
+                if (_user != null)
+                {
+                    MyGoogleUserInfo myuser = new MyGoogleUserInfo()
+                    {
+                        CustomerId = _user.CustomerId,
+                        GivenName = _user.Name.GivenName,
+                        FamilyName = _user.Name.FamilyName,
+                        ThumbnailPhotoUrl = _user.ThumbnailPhotoUrl,
+                        IsEnrolledIn2Sv = _user.IsEnrolledIn2Sv,
+                        IsDelegatedAdmin = _user.IsDelegatedAdmin,
+                        HashFunction = _user.HashFunction,
+                        IsAdmin = _user.IsAdmin,
+                        IsEnforcedIn2Sv = _user.IsEnforcedIn2Sv,
+                        Password = _user.Password,
+                        Phones = _user.Phones,
+                        VerificationCodes = _verificationCodes
+
+                    };
+
+                    return myuser;
+                }            
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return null;
         }
 
+
+        public static string GenerateVerificationCodes(string userKey)
+        {
+            try
+            {
+                DirectoryService _service = GetGoogleDirectoryService();
+
+                var generateVerificationCodesRequest = _service.VerificationCodes.Generate(userKey);
+                var tokensList = generateVerificationCodesRequest.Execute();
+
+                return tokensList;
+
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+
+            return null;
+        }
+
+        public static IList<VerificationCode> GetVerificationCodes(string userKey)
+        {
+            try
+            {
+                DirectoryService _service = GetGoogleDirectoryService();
+
+                var verificationCodesRequest = _service.VerificationCodes.List(userKey);
+                var verificationCodes = verificationCodesRequest.Execute();
+
+                //var verificationCode = verificationCodes.Items[0].VerificationCodeValue;
+                var verificationCodesList = verificationCodes.Items;
+
+                return verificationCodesList;
+
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+
+            return null;
+
+
+        }
+
+        private static DirectoryService GetGoogleDirectoryService()
+        {
+            try
+            {
+                ////Set location for Google Token to be locally stored
+                var googleTokenLocation = Path.Combine(HomeController._wwwRoot.WebRootPath, GoogleFolder);
+
+
+                //Load the Client Configuration in JSON Format as a stream which is used for API Calls
+                var fileStream = new FileStream(ClientSecretJsonFile, FileMode.Open, FileAccess.Read);
+
+
+                //This will create a Token Response User File on the GoogleFolder indicated on your Application
+                var credentials = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    GoogleClientSecrets.Load(fileStream).Secrets,
+                    Scopes,
+                    "user",
+                    CancellationToken.None,
+                  new FileDataStore(googleTokenLocation)).Result;
+
+
+
+                //Create Directory API service.
+                var _service = new DirectoryService(new BaseClientService.Initializer()
+                {
+                    HttpClientInitializer = credentials,
+                    ApplicationName = ApplicationName,
+                });
+
+
+                return _service;
+
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.Message);
+            }
+
+            return null;
+        }
+
+
+        public class MyGoogleUserInfo
+        {
+            public string CustomerId { get; set; }
+            public string GivenName { get; set; }
+            public string FamilyName { get; set; }
+            public string ThumbnailPhotoUrl { get; set; }
+            public bool? IsEnrolledIn2Sv { get; set; }
+            public bool? IsDelegatedAdmin { get; set; }
+
+            public string HashFunction { get; set; }
+            public bool? IsAdmin { get; set; }
+            public bool? IsEnforcedIn2Sv { get; set; }
+
+            public string Password { get; set; }
+
+            public IList<UserPhone> Phones { get; set; }
+            public IList<VerificationCode> VerificationCodes { get; set; }
+        }
     }
 }

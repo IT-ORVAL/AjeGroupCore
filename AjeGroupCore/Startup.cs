@@ -92,12 +92,12 @@ namespace AjeGroupCore
 
             app.UseStaticFiles();
 
-            app.UseStaticFiles(new StaticFileOptions()
-            {
-                FileProvider = new PhysicalFileProvider(
-                    Path.Combine(Directory.GetCurrentDirectory(), @"WebChat")),
-                    RequestPath = new PathString("/WebChat")
-            });
+            //app.UseStaticFiles(new StaticFileOptions()
+            //{
+            //    FileProvider = new PhysicalFileProvider(
+            //        Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot", "WebChat")),
+            //        RequestPath = new PathString("/WebChat")
+            //});
 
             app.UseIdentity();
 

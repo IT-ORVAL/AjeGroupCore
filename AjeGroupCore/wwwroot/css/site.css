@@ -63,8 +63,9 @@ textarea {
     /*text-indent: -5000px;*/
     background: transparent url(../images/logo.jpg) no-repeat left top;
     float: left;
-    margin: 10px;
-    margin-top: 5px;
+    /*margin: 10px;
+    margin-top: 5px;*/
+    margin-top: .5rem;
 }
 
 .main_aje {

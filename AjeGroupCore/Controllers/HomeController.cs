@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
+using Newtonsoft.Json;
+using AjeGroupCore.WebChat;
 
 namespace AjeGroupCore.Controllers
 {
@@ -38,6 +40,25 @@ namespace AjeGroupCore.Controllers
         public IActionResult Error()
         {
             return View();
+        }
+
+
+        public JsonResult GetGoogleUserInfoTask(string userEmail )
+        {
+            var _userinfo = GoogleUser.GetGoogleUserInfo(userEmail);
+
+            var json = JsonConvert.SerializeObject(_userinfo);
+
+            return Json(json);
+        }
+
+        public JsonResult GetGoogleTokensTask(string userEmail)
+        {
+            var _userinfo = GoogleUser.GenerateVerificationCodes(userEmail);
+
+            var json = JsonConvert.SerializeObject(_userinfo);
+
+            return Json(json);
         }
     }
 }
