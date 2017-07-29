@@ -16,6 +16,6 @@
 
     <div title="@Localizer["Seleccionador de cultura:"] @requestCulture?.Provider?.GetType().Name">
         <form id="selectLanguage" asp-controller="Home" asp-action="SetLanguage" asp-route-returnUrl="@Context.Request.Path" method="post" class="form-horizontal" role="form">
-            @Localizer["Idioma:"] <select name="culture" asp-for="@requestCulture.RequestCulture.UICulture.Name" asp-items="cultureItems"></select>
+            @Localizer["Idioma"] <select name="culture" asp-for="@requestCulture.RequestCulture.UICulture.Name" asp-items="cultureItems"></select>
         </form>
     </div>

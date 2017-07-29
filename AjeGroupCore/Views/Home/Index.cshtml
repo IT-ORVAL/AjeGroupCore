@@ -8,10 +8,6 @@
 
 @inject IViewLocalizer Localizer
 
-@{
-    ViewData["Title"] = "Inicio";
-}
-
 @section Styles{
     <link href="~/css/weather.css" rel="stylesheet" />
 }
@@ -67,9 +63,11 @@
     </a>
 </div>
 
+<div>@ViewData["Title"]</div>
+
 <div class="row">
     <div class="col-md-4">
-        <h2>QUIÉNES SOMOS</h2>
+        <h2>@Localizer["QuienesSomos"]</h2>
         <p style="text-align: justify;">
             AJE es una de las empresas multinacionales más grandes de bebidas, con presencia en más de 23 países de Latinoamérica, Asia y África.   A nivel mundial, AJE es la décima mayor empresa de refrescos en volumen de ventas y el cuarto mayor productor de bebidas carbonatadas (Fuente: Euromonitor, 2011). Con un fuerte compromiso para "democratizar el consumo", AJE llega a nuevos grupos de consumidores y les proporciona acceso a productos de alta calidad a precios justos.
         </p>

@@ -61,6 +61,8 @@ namespace AjeGroupCore.Controllers
         {
             HttpContext.Session.SetObjectAsJson("Watson", _credentials);
 
+            ViewData["Title"] = _localizer["Inicio"];
+
             return View();
         }
 
