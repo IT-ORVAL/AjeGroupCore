@@ -1,4 +1,14 @@
-﻿@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+﻿@using System.Globalization
+@using Microsoft.AspNetCore.Http.Features
+@using Microsoft.AspNetCore.Localization
+@using Microsoft.AspNetCore.Mvc.Localization
+
+@inject IViewLocalizer Localizer
+
+
+@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -82,7 +92,14 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2017 - <a href="http://vcaperu.com/" target="_blank">VCA Consulting & Solutions</a></p>
+            <div class="row">
+                <div class="col-md-6">
+                    <p>&copy; 2017 - <a href="http://vcaperu.com/" target="_blank">VCA Consulting & Solutions</a></p>
+                </div>
+                <div class="col-md-6 text-right">
+                    @await Html.PartialAsync("_SelectLanguagePartial")
+                </div>
+            </div>
         </footer>
     </div>
 

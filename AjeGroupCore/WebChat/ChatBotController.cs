@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using IBM.VCA.Watson.Watson;
 using IBM.VCA.Watson.Watson.Model;
 using static IBM.VCA.Watson.Watson.WatsonConversationService;
 using Newtonsoft.Json;
 using IBM.VCA.WebChat.Weather;
 using static AjeGroupCore.WebChat.GoogleUser;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using AjeGroupCore.Helpers;
+using Microsoft.AspNetCore.Http;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,15 +17,19 @@ namespace AjeGroupCore.WebChat
     [Route("api/[controller]")]
     public class ChatBotController : Controller
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private ISession _session => _httpContextAccessor.HttpContext.Session;
+
         static Context context;
+        public static WatsonCredentials _credentials;
 
-        private WatsonCredentials credentials = new WatsonCredentials()
+        public ChatBotController(IHttpContextAccessor httpContextAccessor)
         {
-            workspaceID = "89fd0c87-c437-4573-9c87-c0d31e721cc8",
-            username = "7ecc7e1d-b7a9-472b-9419-a7254411cdd5",
-            password = "HQJwcbFZclYL"
-        };
+            _httpContextAccessor = httpContextAccessor;
+            _credentials = _session.GetObjectFromJson<WatsonCredentials>("Watson");
+        }
 
+       
         [HttpPost]
         public async Task<JsonResult> MessageChatAsync(string msg, bool isInit, bool isValid)
         {
@@ -45,7 +49,7 @@ namespace AjeGroupCore.WebChat
 
                 if (context.Action == "email")
                 {
-                    MyGoogleUserInfo _userinfo = GoogleUser.GetGoogleUserInfo(msg);
+                    MyGoogleUserInfo _userinfo = GetGoogleUserInfo(msg);
 
                     //if (!GoogleUser.IsEmailRegistered(msg))
                     //{
@@ -68,13 +72,13 @@ namespace AjeGroupCore.WebChat
 
                 if (context.Action == "confirmation" && context.Valid == true && context.Password != null)
                 {
-                    string goog = GoogleUser.RunPasswordReset(context.Email, context.Password);
+                    string goog = RunPasswordReset(context.Email, context.Password);
                 }
 
             }
 
 
-            MessageRequest result = Message(msg, context, credentials);
+            MessageRequest result = Message(msg, context, _credentials);
 
             context = result.Context;
 

@@ -26,6 +26,10 @@ $(function () {
         $("#countChats").text(0);
     });
 
+    $("#selectLanguage select").change(function () {
+        $(this).parent().submit();
+    });
+
 }); //End Init
 
 

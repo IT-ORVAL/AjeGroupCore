@@ -19,10 +19,6 @@
     <None Remove="Properties\PublishProfiles\AjeGroupCore - Web Deploy.pubxml" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="wwwroot\js\reniec-vca - Copy.js" />
-  </ItemGroup>
-
 
   <!--<ItemGroup>
     <Content Include="wwwroot\html\ExampleFrame.html" />
@@ -51,6 +47,7 @@
   <ItemGroup>
     <PackageReference Include="Google.Apis" Version="1.28.0" />
     <PackageReference Include="Google.Apis.Admin.Directory.directory_v1" Version="1.28.0.880" />
+    <PackageReference Include="MailKit" Version="1.16.2" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.3" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.2" />
@@ -60,6 +57,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="1.1.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Session" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="1.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="1.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="1.1.2" />
@@ -106,6 +104,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Resources\" />
     <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
   <ItemGroup>
