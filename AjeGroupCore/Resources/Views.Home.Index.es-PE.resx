@@ -117,7 +117,25 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AjeTexto" xml:space="preserve">
+    <value>AJE es una de las empresas multinacionales más grandes de bebidas, con presencia en más de 23 países de Latinoamérica, Asia y África. A nivel mundial, AJE es la décima mayor empresa de refrescos en volumen de ventas y el cuarto mayor productor de bebidas carbonatadas (Fuente: Euromonitor, 2011). Con un fuerte compromiso para "democratizar el consumo", AJE llega a nuevos grupos de consumidores y les proporciona acceso a productos de alta calidad a precios justos.</value>
+  </data>
+  <data name="DescubreAJE" xml:space="preserve">
+    <value>Descubre AJE</value>
+  </data>
+  <data name="DescubreMarcas" xml:space="preserve">
+    <value>Descubre nuestras marcas</value>
+  </data>
+  <data name="Marcas" xml:space="preserve">
+    <value>MARCAS</value>
+  </data>
+  <data name="MarcasTexto" xml:space="preserve">
+    <value>La marca más emblemática de AJE es BIG, y se vende en todos los mercados donde la compañía está presente. El portafolio global de productos de AJE se complementa con marcas como CIELO (agua), Cifrut (jugo), Pulp (néctar), Sporade (bebida con adición de electrolitos), BIG Fresh (carbonatada), Cool Tea (bebida de té) y VOLT (bebida energética).</value>
+  </data>
   <data name="QuienesSomos" xml:space="preserve">
     <value>QUIENES SOMOS</value>
+  </data>
+  <data name="VerMas" xml:space="preserve">
+    <value>Ver más</value>
   </data>
 </root>

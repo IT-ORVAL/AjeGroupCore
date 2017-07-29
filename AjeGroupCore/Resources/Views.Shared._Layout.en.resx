@@ -117,25 +117,13 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="AjeTexto" xml:space="preserve">
-    <value>AJE is one of the largest multinational beverage companies, with presence in over 23 countries in Latin America, Asia and Africa, and with 13,000 direct and indirect employees.   With 28 years of experience, AJE is the 10th largest soft drink company in sales volume and the 4th largest producer of carbonated soft drinks (source: Euromonitor, 2011). With a strong commitment to "democratizing consumption," AJE reaches out to new consumer groups and provides them with access to high quality products at fair prices.</value>
+  <data name="Contactenos" xml:space="preserve">
+    <value>Contact Us</value>
   </data>
-  <data name="DescubreAJE" xml:space="preserve">
-    <value>Discover AJE</value>
+  <data name="Inicio" xml:space="preserve">
+    <value>Home</value>
   </data>
-  <data name="DescubreMarcas" xml:space="preserve">
-    <value>Discover our brands</value>
-  </data>
-  <data name="Marcas" xml:space="preserve">
-    <value>BRANDS</value>
-  </data>
-  <data name="MarcasTexto" xml:space="preserve">
-    <value>In addition to its flagship brand, BIG Cola, AJE’s product portfolio is complemented with brands such as Cielo, Cifrut, Pulp, BIG Fresh, Sporade and Volt in the water and juices categories, as well as electrolyte and energy drinks.</value>
-  </data>
-  <data name="QuienesSomos" xml:space="preserve">
-    <value>WHO WE ARE</value>
-  </data>
-  <data name="VerMas" xml:space="preserve">
-    <value>More</value>
+  <data name="Nosotros" xml:space="preserve">
+    <value>About Us</value>
   </data>
 </root>
