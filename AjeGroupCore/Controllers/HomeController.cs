@@ -20,9 +20,17 @@ namespace AjeGroupCore.Controllers
         private readonly IStringLocalizer<HomeController> _localizer;
         public static IHostingEnvironment _wwwRoot;
 
+        //private WatsonCredentials _credentials = new WatsonCredentials()
+        //{
+        //    workspaceID = "89fd0c87-c437-4573-9c87-c0d31e721cc8",
+        //    username = "7ecc7e1d-b7a9-472b-9419-a7254411cdd5",
+        //    password = "HQJwcbFZclYL"
+        //};
+
+
         private WatsonCredentials _credentials = new WatsonCredentials()
         {
-            workspaceID = "89fd0c87-c437-4573-9c87-c0d31e721cc8",
+            workspaceID = "ac6889fe-7f09-4f71-ac0e-4d8850b72d2f",
             username = "7ecc7e1d-b7a9-472b-9419-a7254411cdd5",
             password = "HQJwcbFZclYL"
         };
@@ -31,7 +39,7 @@ namespace AjeGroupCore.Controllers
             IStringLocalizer<HomeController> localizer)
         {
             _localizer = localizer;
-            _wwwRoot = environment;
+            _wwwRoot = environment;            
         }
 
         [HttpPost]
@@ -45,11 +53,11 @@ namespace AjeGroupCore.Controllers
 
             if (culture == "en")
             {
-                _credentials.workspaceID = "89fd0c87-c437-4573-9c87-c0d31e721cc8";
+                _credentials.workspaceID = "f4462a3c-709b-4dbb-993c-7dc4d59b5f4d";
             }
             else
             {
-                _credentials.workspaceID = "89fd0c87-c437-4573-9c87-c0d31e721cc8";
+                _credentials.workspaceID = "ac6889fe-7f09-4f71-ac0e-4d8850b72d2f";
             }
 
             HttpContext.Session.SetObjectAsJson("Watson", _credentials);
@@ -59,7 +67,12 @@ namespace AjeGroupCore.Controllers
 
         public IActionResult Index()
         {
-            HttpContext.Session.SetObjectAsJson("Watson", _credentials);
+            var creds = HttpContext?.Session?.GetObjectFromJson<WatsonCredentials>("Watson");
+
+            if (creds == null)
+            {
+                HttpContext.Session.SetObjectAsJson("Watson", _credentials);
+            }
 
             ViewData["Title"] = _localizer["Inicio"];
 

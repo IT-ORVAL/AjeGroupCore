@@ -27,6 +27,8 @@ namespace AjeGroupCore.WebChat
         {
             _httpContextAccessor = httpContextAccessor;
             _credentials = _session.GetObjectFromJson<WatsonCredentials>("Watson");
+
+            var _credsTest = HttpContext?.Session?.GetObjectFromJson<WatsonCredentials>("Watson");
         }
 
        
