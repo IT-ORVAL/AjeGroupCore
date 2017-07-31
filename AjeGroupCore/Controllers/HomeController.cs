@@ -74,6 +74,22 @@ namespace AjeGroupCore.Controllers
                 HttpContext.Session.SetObjectAsJson("Watson", _credentials);
             }
 
+            var cookie = Request.Cookies[".AspNetCore.Culture"];
+
+            if (!string.IsNullOrEmpty(cookie))
+            {
+                if (cookie == "c=en|uic=en")
+                {
+                    _credentials.workspaceID = "f4462a3c-709b-4dbb-993c-7dc4d59b5f4d";
+                }
+                else
+                {
+                    _credentials.workspaceID = "ac6889fe-7f09-4f71-ac0e-4d8850b72d2f";
+                }
+
+                HttpContext.Session.SetObjectAsJson("Watson", _credentials);
+            }
+
             ViewData["Title"] = _localizer["Inicio"];
 
             return View();

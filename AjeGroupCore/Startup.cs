@@ -164,8 +164,8 @@ namespace AjeGroupCore
 
             app.UseFacebookAuthentication(new FacebookOptions()
             {
-                AppId = "235008923608113",
-                AppSecret = "2b5dd1d61080a8ecbb8b919eaa889649"
+                AppId = "349798545440890",
+                AppSecret = "988010830a990de94b91aef7aabbf6b1"
             });
 
             // IMPORTANT: This session call MUST go before UseMvc()
