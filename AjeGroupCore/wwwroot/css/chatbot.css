@@ -350,7 +350,8 @@ input[type=text] {
     padding: 10px;
     background-color: #fff;
     bottom: 0;
-    position: absolute;
+    /*position: absolute;*/
+    position: relative;
 }
 
 .box-header:before, .box-body:before, .box-footer:before, .box-header:after, .box-body:after, .box-footer:after {
@@ -377,6 +378,7 @@ input[type=text] {
     border: 1px solid #ccc;
     padding-top: 0;
     padding-bottom: 3px;
+    height: 4.2rem;
 }
 
 .input-group .form-control, .input-group-addon, .input-group-btn {

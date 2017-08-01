@@ -8,7 +8,25 @@
 <form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
     <h4>Crear una nueva cuenta</h4>
     <hr />
+
     <div asp-validation-summary="All" class="text-danger"></div>
+
+    <div class="form-group">
+        <label asp-for="FirstName" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="LastName" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
+    </div>
+
     <div class="form-group">
         <label asp-for="Email" class="col-md-2 control-label"></label>
         <div class="col-md-10">
@@ -16,6 +34,23 @@
             <span asp-validation-for="Email" class="text-danger"></span>
         </div>
     </div>
+
+    <div class="form-group">
+        <label asp-for="PhoneNumber" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="PhoneNumber" class="form-control" />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Birthday" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="Birthday" class="form-control" />
+            <span asp-validation-for="Birthday" class="text-danger"></span>
+        </div>
+    </div>
+
     <div class="form-group">
         <label asp-for="Password" class="col-md-2 control-label"></label>
         <div class="col-md-10">
@@ -23,6 +58,7 @@
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
     </div>
+
     <div class="form-group">
         <label asp-for="ConfirmPassword" class="col-md-2 control-label"></label>
         <div class="col-md-10">
@@ -30,11 +66,29 @@
             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
         </div>
     </div>
+
     <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-default">Registrar</button>
+        <label asp-for="SecretQuestion" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="SecretQuestion" class="form-control" />
+            <span asp-validation-for="SecretQuestion" class="text-danger"></span>
         </div>
     </div>
+
+    <div class="form-group">
+        <label asp-for="SecretResponse" class="col-md-2 control-label"></label>
+        <div class="col-md-10">
+            <input asp-for="SecretResponse" class="form-control" />
+            <span asp-validation-for="SecretResponse" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-primary">Registrar</button>
+        </div>
+    </div>
+
 </form>
 
 @section Scripts {

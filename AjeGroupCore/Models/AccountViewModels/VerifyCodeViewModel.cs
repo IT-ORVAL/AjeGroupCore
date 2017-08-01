@@ -9,14 +9,16 @@ namespace AjeGroupCore.Models.AccountViewModels
     public class VerifyCodeViewModel
     {
         [Required]
+        [Display(Name = "Proveedor")]
         public string Provider { get; set; }
 
         [Required]
+        [Display(Name = "Código")]
         public string Code { get; set; }
 
         public string ReturnUrl { get; set; }
 
-        [Display(Name = "Remember this browser?")]
+        [Display(Name = "Recordar este navegador?")]
         public bool RememberBrowser { get; set; }
 
         [Display(Name = "Remember me?")]

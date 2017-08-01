@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Types;
 
 namespace AjeGroupCore.Services
 {
@@ -18,7 +21,7 @@ namespace AjeGroupCore.Services
         {
             var emailMessage = new MimeMessage();
 
-            emailMessage.From.Add(new MailboxAddress("AJE Group", "tah.suite@gmail.com"));
+            emailMessage.From.Add(new MailboxAddress("AJE Group", "vcaperuadmin@ajegroup.com"));
             emailMessage.To.Add(new MailboxAddress(email, email));
             emailMessage.Subject = subject;
             emailMessage.Body = new TextPart("Html") { Text = message };
@@ -27,8 +30,8 @@ namespace AjeGroupCore.Services
             {
                 var credentials = new NetworkCredential
                 {
-                    UserName = "tah.suite@gmail.com", // replace with valid value
-                    Password = "Esfuerzo1" // replace with valid value
+                    UserName = "vcaperuadmin@ajegroup.com", // replace with valid value
+                    Password = "maximo01" // replace with valid value
                 };
 
                 client.LocalDomain = "gmail.com";
@@ -40,9 +43,26 @@ namespace AjeGroupCore.Services
             }
         }
 
+
+
+        private SMSoptions Options = new SMSoptions()
+        {
+            SMSAccountIdentification = "AC3b8013df8b91cb174177c7fc53582e7b",
+            SMSAccountPassword = "4c4f33d28a4d5c9360d80675075faef6",
+            SMSAccountFrom = "+17372104316"
+        };
+
         public Task SendSmsAsync(string number, string message)
         {
-            // Plug in your SMS service here to send a text message.
+            var accountSid = Options.SMSAccountIdentification;
+            var authToken = Options.SMSAccountPassword;
+
+            TwilioClient.Init(accountSid, authToken);
+
+            var msg = MessageResource.Create(
+              to: new PhoneNumber(number),
+              from: new PhoneNumber(Options.SMSAccountFrom),
+              body: message);
             return Task.FromResult(0);
         }
     }

@@ -12,6 +12,8 @@ using Microsoft.Extensions.Options;
 using AjeGroupCore.Models;
 using AjeGroupCore.Models.AccountViewModels;
 using AjeGroupCore.Services;
+using OtpSharp;
+using System.Net;
 
 namespace AjeGroupCore.Controllers
 {
@@ -24,6 +26,8 @@ namespace AjeGroupCore.Controllers
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
         private readonly string _externalCookieScheme;
+
+
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -62,28 +66,44 @@ namespace AjeGroupCore.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+
             if (ModelState.IsValid)
             {
+                // Require the user to have a confirmed email before they can log on.
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    if (!await _userManager.IsEmailConfirmedAsync(user))
+                    {
+                        ModelState.AddModelError(string.Empty,
+                                      "Tiene que confirmar su cuenta de correo electrónico");
+                        return View(model);
+                    }
+                }
+
                 // This doesn't count login failures towards account lockout
                 // To enable password failures to trigger account lockout, set lockoutOnFailure: true
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+
                 if (result.Succeeded)
                 {
                     _logger.LogInformation(1, "User logged in.");
                     return RedirectToLocal(returnUrl);
                 }
+
                 if (result.RequiresTwoFactor)
                 {
                     return RedirectToAction(nameof(SendCode), new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
                 }
+
                 if (result.IsLockedOut)
                 {
-                    _logger.LogWarning(2, "User account locked out.");
+                    _logger.LogWarning(2, "Cuent a usuario bloqueada. Intente nuevamente en 10 minutos");
                     return View("Lockout");
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Intnto de ingreso inválido");
                     return View(model);
                 }
             }
@@ -110,20 +130,35 @@ namespace AjeGroupCore.Controllers
         public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
+
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+                var user = new ApplicationUser {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Birthday = model.Birthday,
+                    PhoneNumber = model.PhoneNumber,
+                    SecretQuestion = model.SecretQuestion,
+                    SecretResponse = model.SecretResponse
+                };
+
                 var result = await _userManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
-                    // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
-                    // Send an email with this link
-                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //var callbackUrl = Url.Action(nameof(ConfirmEmail), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                    //await _emailSender.SendEmailAsync(model.Email, "Confirm your account",
-                    //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation(3, "User created a new account with password.");
+                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    var callbackUrl = Url.Action(nameof(ConfirmEmail), "account", new { userid = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+
+                    await _emailSender.SendEmailAsync(model.Email, "AJE Group - Confirme su cuenta",
+                        $"Por favor confirme su cuenta haciendo click <a href='{callbackUrl}'>AQUI</a>");
+
+                    //await _signInManager.SignInAsync(user, isPersistent: false);
+
+                    _logger.LogInformation(3, "Usuario ha creado una nueva cuenta con clave");
+
                     return RedirectToLocal(returnUrl);
                 }
                 AddErrors(result);
@@ -270,19 +305,20 @@ namespace AjeGroupCore.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
+
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
                 }
 
-                // For more information on how to enable account confirmation and password reset please visit https://go.microsoft.com/fwlink/?LinkID=532713
-                // Send an email with this link
-                //var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                //var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-                //await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-                //   $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
-                //return View("ForgotPasswordConfirmation");
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+
+                await _emailSender.SendEmailAsync(model.Email, "AJE Group - Reinicio de Clave",
+                   $"Por favor, reinicie su clave haciendo click <a href='{callbackUrl}'>AQUÍ</a>");
+
+                return View("ForgotPasswordConfirmation");
             }
 
             // If we got this far, something failed, redisplay form
@@ -349,13 +385,43 @@ namespace AjeGroupCore.Controllers
         public async Task<ActionResult> SendCode(string returnUrl = null, bool rememberMe = false)
         {
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+
             if (user == null)
             {
                 return View("Error");
             }
+
             var userFactors = await _userManager.GetValidTwoFactorProvidersAsync(user);
-            var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
-            return View(new SendCodeViewModel { Providers = factorOptions, ReturnUrl = returnUrl, RememberMe = rememberMe });
+
+            //var factorOptions = userFactors.Select(purpose => new SelectListItem { Text = purpose, Value = purpose }).ToList();
+
+            List<SelectListItem> factorOptions = new List<SelectListItem>();
+
+            foreach (var item in userFactors)
+            {
+                switch (item)
+                {
+                    case "Email":
+                        factorOptions.Add(new SelectListItem { Text = "Correo Electrónico", Value = "Email" });
+                        break;
+
+                    case "Phone":
+                        factorOptions.Add(new SelectListItem { Text = "Teléfono", Value = "Phone" });
+                        break;
+                    default:
+                        factorOptions.Add(new SelectListItem { Text = item, Value = item });
+                        break;
+                }
+            }
+
+            factorOptions.Add(new SelectListItem { Text = "Pregunta secreta", Value = "Secret" });
+            factorOptions.Add(new SelectListItem { Text = "Token Google", Value = "Token" });
+
+            return View(new SendCodeViewModel {
+                Providers = factorOptions,
+                ReturnUrl = returnUrl,
+                RememberMe = rememberMe
+            });
         }
 
         //
@@ -371,29 +437,61 @@ namespace AjeGroupCore.Controllers
             }
 
             var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+
             if (user == null)
             {
                 return View("Error");
             }
 
+            string myProvider = model.SelectedProvider;
+
             // Generate the token and send it
-            var code = await _userManager.GenerateTwoFactorTokenAsync(user, model.SelectedProvider);
+            if (model.SelectedProvider == "Token" || model.SelectedProvider == "Secret")
+            {
+                myProvider = "Email";
+
+            }
+
+            string code = await _userManager.GenerateTwoFactorTokenAsync(user, myProvider);
+
             if (string.IsNullOrWhiteSpace(code))
             {
                 return View("Error");
             }
 
-            var message = "Your security code is: " + code;
-            if (model.SelectedProvider == "Email")
+            var message = "Su código de seguridad es: " + code;
+
+            switch (model.SelectedProvider)
             {
-                await _emailSender.SendEmailAsync(await _userManager.GetEmailAsync(user), "Security Code", message);
-            }
-            else if (model.SelectedProvider == "Phone")
-            {
-                await _smsSender.SendSmsAsync(await _userManager.GetPhoneNumberAsync(user), message);
+                case "Email":
+                    await _emailSender.SendEmailAsync(await _userManager.GetEmailAsync(user), "AJE Group - Código de Seguridad", message);
+                    break;
+
+                case "Phone":
+                    await _smsSender.SendSmsAsync(await _userManager.GetPhoneNumberAsync(user), message);
+                    break;
+
+                case "Secret":
+                    break;
+
+                case "Token":
+                    return RedirectToAction(nameof(GoogleTokenAsync), new { Code = code, Provider = myProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
+
+                default:
+                    break;
             }
 
-            return RedirectToAction(nameof(VerifyCode), new { Provider = model.SelectedProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
+            //if (model.SelectedProvider == "Email")
+            //{
+            //    await _emailSender.SendEmailAsync(await _userManager.GetEmailAsync(user), "AJE Group - Código de Seguridad", message);
+
+            //}
+            //else if (model.SelectedProvider == "Phone")
+            //{
+            //    await _smsSender.SendSmsAsync(await _userManager.GetPhoneNumberAsync(user), message);
+            //}
+
+            return RedirectToAction(nameof(VerifyCode), new { Provider = myProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
         }
 
         //
@@ -427,6 +525,7 @@ namespace AjeGroupCore.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user account
             // will be locked out for a specified amount of time.
             var result = await _signInManager.TwoFactorSignInAsync(model.Provider, model.Code, model.RememberMe, model.RememberBrowser);
+
             if (result.Succeeded)
             {
                 return RedirectToLocal(model.ReturnUrl);
@@ -442,6 +541,94 @@ namespace AjeGroupCore.Controllers
                 return View(model);
             }
         }
+
+
+        //private const string key = "qaz123!@@)(*"; // any 10-12 char string for use as private key in google authenticator
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleTokenAsync(string code, string provider, bool rememberMe, string returnUrl = null)
+        {
+            // Require that the user has already logged in via username/password or external login
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+
+            if (user == null)
+            {
+                return View("Error");
+            }
+
+            string message = "Verificación de 2 pasos con Google Authorization";
+
+            byte[] secretKey = KeyGeneration.GenerateRandomKey(20);
+            string userId = user.Id;
+            string barcodeUrl = KeyUrl.GetTotpUrl(secretKey, userId) + "&issuer=AjeGroupCore";
+
+
+            var model = new GoogleAuthenticatorViewModel
+            {
+                SecretKey = Convert.ToBase64String(secretKey),
+                BarcodeUrl = WebUtility.UrlEncode(barcodeUrl),
+                Provider = provider,
+                RememberMe = rememberMe,
+                ReturnUrl = returnUrl,
+                Code = code
+            };
+
+
+            ViewData["Message"] = message;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleTokenAsync(GoogleAuthenticatorViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                byte[] secretKey = Convert.FromBase64String(model.SecretKey);
+
+                long timeStepMatched = 0;
+
+                var otp = new Totp(secretKey);
+
+                if (otp.VerifyTotp(model.Token, out timeStepMatched, new VerificationWindow(2, 2)))
+                {
+                    //var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+                    //return RedirectToAction("Index", "Manage");
+
+
+                    var result = await _signInManager.TwoFactorSignInAsync(model.Provider, model.Code, model.RememberMe, model.RememberBrowser);
+
+                    if (result.Succeeded)
+                    {
+                        return RedirectToLocal(model.ReturnUrl);
+                    }
+
+                    if (result.IsLockedOut)
+                    {
+                        _logger.LogWarning(7, "User account locked out.");
+                        return View("Lockout");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Código inválido");
+                        return View(model);
+                    }
+
+                }
+                else
+                    ModelState.AddModelError("Code", "El código no es válido");
+            }
+
+
+
+
+
+            return View(model);
+        }
+
 
         //
         // GET /Account/AccessDenied

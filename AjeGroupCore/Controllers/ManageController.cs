@@ -47,10 +47,10 @@ namespace AjeGroupCore.Controllers
             ViewData["StatusMessage"] =
                 message == ManageMessageId.ChangePasswordSuccess ? "Su Clave ha sido actualizada"
                 : message == ManageMessageId.SetPasswordSuccess ? "Se ha registrado su Clave"
-                : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
+                : message == ManageMessageId.SetTwoFactorSuccess ? "Se ha establecido su validación de 2 pasos"
                 : message == ManageMessageId.Error ? "Ha ocurrido un error"
-                : message == ManageMessageId.AddPhoneSuccess ? "Your phone number was added."
-                : message == ManageMessageId.RemovePhoneSuccess ? "Your phone number was removed."
+                : message == ManageMessageId.AddPhoneSuccess ? "Se agregó su teléfono"
+                : message == ManageMessageId.RemovePhoneSuccess ? "Se eliminó su telefono"
                 : "";
 
             var user = await GetCurrentUserAsync();
@@ -113,7 +113,7 @@ namespace AjeGroupCore.Controllers
                 return View("Error");
             }
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
-            await _smsSender.SendSmsAsync(model.PhoneNumber, "Your security code is: " + code);
+            await _smsSender.SendSmsAsync(model.PhoneNumber, "Su código de seguridad es: " + code);
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
         }
 
@@ -185,7 +185,7 @@ namespace AjeGroupCore.Controllers
                 }
             }
             // If we got this far, something failed, redisplay the form
-            ModelState.AddModelError(string.Empty, "Failed to verify phone number");
+            ModelState.AddModelError(string.Empty, "No se pudo verificar el número de teléfono");
             return View(model);
         }
 

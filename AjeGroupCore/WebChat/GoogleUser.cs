@@ -23,8 +23,8 @@ namespace AjeGroupCore.WebChat
         //private const string ClientSecretJsonFile = "AJE_Client_Secret.json";
         //private const string GoogleFolder = "Google";
 
-        private const string ApplicationName = "Data One Peru";
-        private const string ClientSecretJsonFile = "DOP_Client_Secret.json";
+        private const string ApplicationName = "AJE Group ChatBot";
+        private const string ClientSecretJsonFile = "AJE_Other_Client_Secret.json";
         private const string GoogleFolder = "Google";
 
 
