@@ -472,7 +472,7 @@ namespace AjeGroupCore.Controllers
                     break;
 
                 case "Secret":
-                    break;
+                    return RedirectToAction(nameof(SecretAuth), new { Code = code, Provider = myProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
 
                 case "Token":
                     return RedirectToAction(nameof(GoogleTokenAsync), new { Code = code, Provider = myProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
@@ -493,6 +493,8 @@ namespace AjeGroupCore.Controllers
 
             return RedirectToAction(nameof(VerifyCode), new { Provider = myProvider, ReturnUrl = model.ReturnUrl, RememberMe = model.RememberMe });
         }
+
+
 
         //
         // GET: /Account/VerifyCode
@@ -581,6 +583,39 @@ namespace AjeGroupCore.Controllers
             return View(model);
         }
 
+
+        // GET: /Account/VerifyCode
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> SecretAuth(string code, string provider, bool rememberMe, string returnUrl = null)
+        {
+            // Require that the user has already logged in via username/password or external login
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+
+            if (user == null)
+            {
+                return View("Error");
+            }
+
+            string message = "Verificación de 2 pasos con Pregunta Secreta";
+
+            var model = new SecretAuthViewModel
+            {
+                SecretQuestion = user.SecretQuestion,
+                Provider = provider,
+                RememberMe = rememberMe,
+                ReturnUrl = returnUrl,
+                Code = code,
+                Response = user.SecretResponse
+            };
+
+            ViewData["Message"] = message;
+
+            return View(model);
+        }
+
+
+
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> GoogleTokenAsync(GoogleAuthenticatorViewModel model)
@@ -628,6 +663,52 @@ namespace AjeGroupCore.Controllers
 
             return View(model);
         }
+
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> SecretAuth(SecretAuthViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+
+                if (model.Token == model.Response )
+                {
+                    //var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+                    //return RedirectToAction("Index", "Manage");
+
+
+                    var result = await _signInManager.TwoFactorSignInAsync(model.Provider, model.Code, model.RememberMe, model.RememberBrowser);
+
+                    if (result.Succeeded)
+                    {
+                        return RedirectToLocal(model.ReturnUrl);
+                    }
+
+                    if (result.IsLockedOut)
+                    {
+                        _logger.LogWarning(7, "User account locked out.");
+                        return View("Lockout");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, "Código inválido");
+                        return View(model);
+                    }
+
+                }
+                else
+                    ModelState.AddModelError("Code", "El código no es válido");
+            }
+
+
+
+
+
+            return View(model);
+        }
+
 
 
         //
