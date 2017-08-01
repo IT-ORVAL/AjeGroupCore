@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using AjeGroupCore.Models;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AjeGroupCore.Data
 {
@@ -15,12 +16,17 @@ namespace AjeGroupCore.Data
         {
         }
 
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            // Customize the ASP.NET Identity model and override the defaults if needed.
-            // For example, you can rename the ASP.NET Identity table names and more.
-            // Add your customizations after calling base.OnModelCreating(builder);
+
+            builder.Entity<ApplicationUser>().Property(u => u.UserName).HasMaxLength(255);
+            builder.Entity<ApplicationUser>().Property(u => u.Email).HasMaxLength(255);
+            builder.Entity<IdentityRole>().Property(r => r.Name).HasMaxLength(255);
+
+            //builder.Entity<HistoryRow>().Property(h => h.MigrationId).HasMaxLength(100).IsRequired();
+
         }
     }
 }

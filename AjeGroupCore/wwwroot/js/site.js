@@ -12,19 +12,8 @@ $(function () {
         swal("En desarrollo!", "Estamos trabajando en esta funcionalidad", "info")
     });
 
-    $(".collapse-chat").click(function () {
-        $("#chatbot").toggle();
-        $("#textInput").focus();
-    });
-
     $('[data-toggle="tooltip"]').tooltip();
 
-    sendRequest(true);
-    $("#textInput").focus();
-
-    $("#scrollingChat").scroll(function () {
-        $("#countChats").text(0);
-    });
 
     $("#selectLanguage select").change(function () {
         $(this).parent().submit();

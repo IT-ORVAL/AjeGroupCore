@@ -5,11 +5,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using AjeGroupCore.Data;
 
-namespace AjeGroupCore.Data.Migrations
+namespace AjeGroupCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170731174516_registerform")]
-    partial class registerform
+    [Migration("20170801201939_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,13 +24,13 @@ namespace AjeGroupCore.Data.Migrations
 
                     b.Property<int>("AccessFailedCount");
 
-                    b.Property<DateTime>("Birthday");
+                    b.Property<DateTime?>("Birthday");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
                     b.Property<string>("Email")
-                        .HasMaxLength(256);
+                        .HasMaxLength(255);
 
                     b.Property<bool>("EmailConfirmed");
 
@@ -65,7 +65,7 @@ namespace AjeGroupCore.Data.Migrations
                     b.Property<bool>("TwoFactorEnabled");
 
                     b.Property<string>("UserName")
-                        .HasMaxLength(256);
+                        .HasMaxLength(255);
 
                     b.HasKey("Id");
 
@@ -88,7 +88,7 @@ namespace AjeGroupCore.Data.Migrations
                         .IsConcurrencyToken();
 
                     b.Property<string>("Name")
-                        .HasMaxLength(256);
+                        .HasMaxLength(255);
 
                     b.Property<string>("NormalizedName")
                         .HasMaxLength(256);

@@ -76,11 +76,12 @@ a {
 }
 
 
-input[type=text] {
-    background-color: transparent;
+input[type=text], input[type=email], input[type=date], input[type=password], input.form-control, select.form-control {
+    /*background-color: transparent;*/
+    background-color: lightgray;
     border-radius: 0;
     outline: none;
-    height: 3.5rem;
+    height: 3.4rem;
     font-size: 1.5rem;
     box-shadow: none;
     box-sizing: content-box;

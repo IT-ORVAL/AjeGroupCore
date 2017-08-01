@@ -1,8 +1,23 @@
 ﻿var _contextAction;
 var _password;
 
+$(function () {
+    $(".collapse-chat").click(function () {
+        $("#chatbot").toggle();
+        $("#textInput").focus();
+    });
+
+    $("#scrollingChat").scroll(function () {
+        $("#countChats").text(0);
+    });
+
+}); // Init
+
+
+
 function sendRequest(init) {
     var url = "/Api/ChatBot/";
+
     var msg = $("#textInput").val();
     var valid = false;
 
@@ -25,43 +40,52 @@ function sendRequest(init) {
         }
     }
 
+    switch (_contextAction) {
 
-    if (_contextAction === "email") {
-        if (validateEmail(msg)) {
-            //NotificationToast("sucess", "Correo válido", "Confirmación");
-            valid = true;
-            appendMessage(true, msg);
-        }
-        else {
-            NotificationToast("error", "Correo inválido", "Error");
-            valid = false;
-        }
+        case "emailToValidate":
+            if (validateEmail(msg)) {
+                valid = true;
+                appendMessage(true, msg);
+            }
+            else {
+                NotificationToast("error", "Correo inválido", "Error");
+                valid = false;
+            }
+
+            break;
+
+        case "passwordToValidate":
+            if (msg.length < 8) {
+                NotificationToast("error", "La clave debe ser mínimo de 8 caracteres", "Error");
+
+                _contextAction = "emailToValidate";
+                valid = false;
+            }
+            else {
+                valid = true;
+                _password = msg;
+            }
+
+            break;
+
+        case "confirmationToValidate":
+            if (_password !== msg) {
+                NotificationToast("error", "La confirmación no coincide con la clave. Intente de nuevo", "Error");
+
+                _contextAction = "passwordToValidate";
+                valid = false;
+            }
+            else {
+                valid = true;
+            }
+         
+
+            break;
+
+        default:
+            break;
     }
 
-    if (_contextAction === "password") {
-        if (msg.length < 8) {
-            NotificationToast("error", "La clave debe ser mínimo de 8 caracteres", "Error");
-            valid = false;
-        }
-        else {
-            //NotificationToast("sucess", "Excelente!", "Confirmación");
-            valid = true;
-            _password = msg;
-        }
-    }
-
-    if (_contextAction === "confirmation") {
-        if (_password !== msg) {
-            NotificationToast("error", "La confirmación no coincide con la clave. Intente de nuevo", "Error");
-
-            _contextAction = "email";
-            valid = false;
-        }
-        else {
-            NotificationToast("sucess", "Clave modificada con éxito!", "Confirmación");
-            valid = true;
-        }
-    }
 
 
 
@@ -81,7 +105,7 @@ function sendRequest(init) {
 
         $("#countChats").text(total);
 
-        if (_contextAction === "password" || _contextAction === "confirmation") {
+        if (_contextAction === "passwordToValidate" || _contextAction === "confirmationToValidate") {
             $("#textInput").attr("type", "password");
         }
         else {
@@ -90,10 +114,9 @@ function sendRequest(init) {
         }
 
 
-        //if (_contextAction === "password" || _contextAction === "success") {
-        //    getGoogleUserInfo(obj.context.email);
-        //}
-
+        if (_contextAction === "success") {
+            NotificationToast("success", "Clave modificada con éxito!", "Confirmación");
+        }
 
 
         resetInputChat();
@@ -151,6 +174,8 @@ function appendMessage(isUser, message) {
         "</div>"
 
     $("#scrollingChat").append(element);
+
+    $("#scrollingChat").scrollTop($("#scrollingChat")[0].scrollHeight);
 
 
 }

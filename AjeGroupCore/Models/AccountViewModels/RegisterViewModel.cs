@@ -25,9 +25,12 @@ namespace AjeGroupCore.Models.AccountViewModels
         [Display(Name = "Teléfono")]
         public string PhoneNumber { get; set; }
 
-        [Required]
+        //[Required]
         [Display(Name = "Cumpleaños")]
-        public DateTime Birthday { get; set; }
+        //[DisplayFormat(DataFormatString = "{0: dd/MM/yyyy}", ApplyFormatInEditMode = true)]
+        //[DataType(DataType.Date)]
+        //[DisplayFormat(DataFormatString = "{0: yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? Birthday { get; set; }
 
         [Required]
         [StringLength(100, ErrorMessage = "El {0} debe ser mínimo de {2} y máximo de {1} caracteres de longitud.", MinimumLength = 6)]

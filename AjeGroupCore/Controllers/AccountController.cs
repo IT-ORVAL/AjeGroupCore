@@ -14,6 +14,7 @@ using AjeGroupCore.Models.AccountViewModels;
 using AjeGroupCore.Services;
 using OtpSharp;
 using System.Net;
+using System.Globalization;
 
 namespace AjeGroupCore.Controllers
 {
@@ -133,13 +134,33 @@ namespace AjeGroupCore.Controllers
 
             if (ModelState.IsValid)
             {
+                //var x = model.Birthday.ToString("dd-MM-yyyy");
+                //var xx = model.Birthday.ToString("yyyy-MM-dd HH:mm:ss");
+
+                //var z = Convert.ToDateTime(x);
+                //var zz = Convert.ToDateTime(xx);            
+
+                //var ooo = string.Format(model.Birthday.ToString(), "yyyy-MM-dd");
+
+                //var xxxxx = model.Birthday.ToUniversalTime();
+
+                //string dateString, format;
+                //DateTime myDate;
+                //CultureInfo provider = CultureInfo.InvariantCulture;
+                //format = "yyyy-MM-dd HH:mm:ss";
+                //dateString = xx;
+                //myDate = DateTime.ParseExact(xx, format, provider);
+
+
+                //DateTime dt2 = DateTime.ParseExact(x, "yyyy/MM/dd", CultureInfo.InvariantCulture);
+
                 var user = new ApplicationUser {
                     UserName = model.Email,
                     Email = model.Email,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     Birthday = model.Birthday,
-                    PhoneNumber = model.PhoneNumber,
+                    PhoneNumber = PhoneFormatter(model.PhoneNumber),
                     SecretQuestion = model.SecretQuestion,
                     SecretResponse = model.SecretResponse
                 };
@@ -166,6 +187,17 @@ namespace AjeGroupCore.Controllers
 
             // If we got this far, something failed, redisplay form
             return View(model);
+        }
+
+
+        public string PhoneFormatter(string phone)
+        {
+            var myPhone = phone.Replace("(", string.Empty);
+            myPhone = myPhone.Replace(")", string.Empty);
+            myPhone = myPhone.Replace("-", string.Empty);
+            myPhone = myPhone.Replace(" ", string.Empty);
+
+            return myPhone;
         }
 
         //

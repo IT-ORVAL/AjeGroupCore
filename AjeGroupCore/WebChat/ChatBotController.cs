@@ -9,6 +9,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using AjeGroupCore.Helpers;
 using Microsoft.AspNetCore.Http;
+using AjeGroupCore.Models;
+using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,81 +26,169 @@ namespace AjeGroupCore.WebChat
         static Context context;
         public static WatsonCredentials _credentials;
 
-        public ChatBotController(IHttpContextAccessor httpContextAccessor)
+        private readonly UserManager<ApplicationUser> _userManager;
+
+        public ChatBotController(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager)
         {
             _httpContextAccessor = httpContextAccessor;
             _credentials = _session.GetObjectFromJson<WatsonCredentials>("Watson");
 
             var _credsTest = HttpContext?.Session?.GetObjectFromJson<WatsonCredentials>("Watson");
+
+            _userManager = userManager;
         }
 
        
         [HttpPost]
         public async Task<JsonResult> MessageChatAsync(string msg, bool isInit, bool isValid)
         {
-            string _forecast = null;
             string _attachment = null;
 
             if (isInit)
             {
                 context = null;
 
-                _forecast = await CallWeatherAsync(null, null);
             }
 
             if (context != null)
             {
                 context.Valid = isValid;
 
-                if (context.Action == "email")
+                switch (context.Action)
                 {
-                    MyGoogleUserInfo _userinfo = GetGoogleUserInfo(msg);
+                    case "emailToValidate":
+                        MyGoogleUserInfo _userinfo = GetGoogleUserInfo(msg);
 
-                    //if (!GoogleUser.IsEmailRegistered(msg))
-                    //{
-                    //    context.Valid = false;
-                    //}
+                        //if (!GoogleUser.IsEmailRegistered(msg))
+                        //{
+                        //    context.Valid = false;
+                        //}
 
-                    if (_userinfo == null)
-                    {
-                        context.Valid = false;
-                        //context = null;
-                    }
-                    else
-                    {
-                        context.UserName = _userinfo.GivenName;
+                        if (_userinfo == null)
+                        {
+                            context.Valid = false;
+                            //context = null;
+                        }
+                        else
+                        {
+                            context.UserName = _userinfo.GivenName;
+                            context.Email = msg;
+                            context.Valid = true;
 
-                        _attachment = "<a class='btn btn-default' href=javascript:getGoogleUserInfo('" +
-                          msg + "');>Ver datos</a>";
-                    }
+                            //_attachment = "<a class='btn btn-default' href=javascript:getGoogleUserInfo('" +
+                            //  msg + "');>Ver datos</a>";
+                        }
+
+                        break;
+
+                    case "secretToValidate":
+                        var user = await _userManager.FindByEmailAsync(context.Email);
+
+
+                        if (msg == user?.SecretResponse)
+                        {
+                            context.Valid = true;
+                        }
+                        else
+                        {
+                            context.Valid = false;
+                        }
+
+                        break;
+
+                    case "confirmationToValidate":
+                        if (context.Valid == true && context.Password != null)
+                        {
+                            string goog = RunPasswordReset(context.Email, context.Password);
+                        }
+
+                        break;
+
+                    default:
+                        break;
                 }
 
-                if (context.Action == "confirmation" && context.Valid == true && context.Password != null)
-                {
-                    string goog = RunPasswordReset(context.Email, context.Password);
-                }
 
             }
 
 
             MessageRequest result = Message(msg, context, _credentials);
 
+
+            if (result.Intents != null)
+            {
+                string myIntent = result.Intents[0].IntentDescription;
+                string myAction = context?.Action;
+
+                switch (myIntent)
+                {
+                    case "clima":
+                        string _forecast = await CallWeatherAsync(null, null);
+
+                        if (!string.IsNullOrEmpty(_forecast))
+                        {
+                            result.Output.Text.Add(_forecast);
+                        }
+
+                        break;
+
+
+                    default:
+                        break;
+                }
+            }
+
+
             context = result.Context;
 
-            if (!string.IsNullOrEmpty(_forecast))
+            switch (context.Action)
             {
-                result.Output.Text.Add(_forecast);
+                case "secretToValidate":
+                    var user = await _userManager.FindByEmailAsync(context.Email);
+
+                    if (user != null)
+                    {
+                        result.Output.Text.Add(user.SecretQuestion);
+                        context.Valid = true;
+                    }
+                    else
+                    {
+                        result.Output = new OutputData()
+                        {
+                            Text = new List<string>()
+                            {
+                                "Debe registrarse primero en la aplicación"
+                            }
+                        };
+                        context.Valid = false;
+                    }
+
+
+
+                    break;
+
+                case "success":
+
+                    //_attachment = "<a class='btn btn-default' href=javascript:getGoogleUserInfo('" +
+                    // context.Email + "');>Ver datos</a>";
+                    //_attachment = _attachment + "<br />";
+                    //_attachment = _attachment + "<a class='btn btn-default' href=javascript:getGoogleTokens('" +
+                    //       context.Email + "');>Generar Tokens</a>";
+
+                    break;
+                default:
+                    break;
             }
 
 
-            if (context.Action == "success")
-            {
-                _attachment = "<a class='btn btn-default' href=javascript:getGoogleUserInfo('" +
-                      context.Email + "');>Ver datos</a>";
-                _attachment = _attachment + "<br />";
-                _attachment = _attachment + "<a class='btn btn-default' href=javascript:getGoogleTokens('" +
-                       context.Email + "');>Generar Tokens</a>";
-            }
+            //if (context.Action == "success")
+            //{
+            //    _attachment = "<a class='btn btn-default' href=javascript:getGoogleUserInfo('" +
+            //          context.Email + "');>Ver datos</a>";
+            //    _attachment = _attachment + "<br />";
+            //    _attachment = _attachment + "<a class='btn btn-default' href=javascript:getGoogleTokens('" +
+            //           context.Email + "');>Generar Tokens</a>";
+            //}
 
             if (!string.IsNullOrEmpty(_attachment))
             {

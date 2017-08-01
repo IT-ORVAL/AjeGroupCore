@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace AjeGroupCore.Models
 {
@@ -18,7 +19,10 @@ namespace AjeGroupCore.Models
         [Required]
         public string LastName { get; set; }
 
-        public DateTime Birthday { get; set; }
+        //[DisplayFormat(DataFormatString = "{0: yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        //[DataType(DataType.Date)]
+        //[Column(TypeName = "datetime2")]
+        public DateTime? Birthday { get; set; }
 
         public string SecretQuestion { get; set; }
 
