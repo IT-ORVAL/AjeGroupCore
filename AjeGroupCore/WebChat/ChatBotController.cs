@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Http;
 using AjeGroupCore.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
+using static AjeGroupCore.WebChat.Models.WebChatTemplates;
+using AjeGroupCore.WebChat.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -132,6 +134,21 @@ namespace AjeGroupCore.WebChat
 
                         break;
 
+                    case "menu":
+                        ButtonListTemplate _menu = new ButtonListTemplate()
+                        {
+                            Buttons = new List<ButtonTemplate>()
+                            {
+                                new ButtonTemplate() { HrefLink = "", Text = "Crear Ticket" },
+                                new ButtonTemplate() { HrefLink = "", Text = "Consultar Ticket" },
+                            }
+                        };
+
+
+
+                        _attachment = ButtonListConstructor(_menu);
+
+                        break;
 
                     default:
                         break;
@@ -230,6 +247,7 @@ namespace AjeGroupCore.WebChat
             return _forecast;
 
         }
+
 
     }
 }

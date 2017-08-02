@@ -75,6 +75,11 @@ a {
     line-height: 37px;
 }
 
+a.chatButton {
+    display: block;
+    margin: 1rem;
+}
+
 
 input[type=text], input[type=email], input[type=date], input[type=password], input.form-control, select.form-control {
     /*background-color: transparent;*/
