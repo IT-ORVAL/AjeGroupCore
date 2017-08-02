@@ -141,10 +141,17 @@ function resetInputChat() {
 
     $("#textInput").focus();
 
-    $("#scrollingChat").scrollTop($("#scrollingChat")[0].scrollHeight);
+    //$("#scrollingChat").scrollTop($("#scrollingChat")[0].scrollHeight);
+    //$("#scrollingChat").scrollTop($("#bodyChat")[0].scrollHeight);
+    
 
 }
 
+function resetChat() {
+    _contextAction = "";
+    $("#scrollingChat").text(null);
+    sendRequest(true);
+}
 
 function appendMessage(isUser, message) {
     var nombre = "Watson";
@@ -175,8 +182,7 @@ function appendMessage(isUser, message) {
 
     $("#scrollingChat").append(element);
 
-    $("#scrollingChat").scrollTop($("#scrollingChat")[0].scrollHeight);
-
+    $("#bodyChat").scrollTop($("#scrollingChat")[0].scrollHeight);
 
 }
 

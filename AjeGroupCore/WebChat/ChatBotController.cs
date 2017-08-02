@@ -160,7 +160,9 @@ namespace AjeGroupCore.WebChat
                                 "Debe registrarse primero en la aplicación"
                             }
                         };
-                        context.Valid = false;
+
+                        //context.Valid = false;
+                        context = null;
                     }
 
 
