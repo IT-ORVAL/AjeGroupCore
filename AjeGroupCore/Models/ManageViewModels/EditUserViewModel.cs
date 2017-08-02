@@ -4,10 +4,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AjeGroupCore.Models.AccountViewModels
+namespace AjeGroupCore.Models.ManageViewModels
 {
-    public class ExternalLoginConfirmationViewModel
+    public class EditUserViewModel
     {
+        [Required]
+        public string Id { get; set; }
+
         [Required]
         [Display(Name = "Nombres")]
         public string FirstName { get; set; }
@@ -15,15 +18,6 @@ namespace AjeGroupCore.Models.AccountViewModels
         [Required]
         [Display(Name = "Apellidos")]
         public string LastName { get; set; }
-
-        [Required]
-        [EmailAddress]
-        [Display(Name = "Correo Electrónico")]
-        public string Email { get; set; }
-
-        [Required]
-        [Display(Name = "Teléfono")]
-        public string PhoneNumber { get; set; }
 
         [Display(Name = "Cumpleaños")]
         public DateTime? Birthday { get; set; }

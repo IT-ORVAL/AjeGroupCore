@@ -72,10 +72,21 @@ namespace AjeGroupCore.Controllers
             {
                 // Require the user to have a confirmed email before they can log on.
                 var user = await _userManager.FindByEmailAsync(model.Email);
+
                 if (user != null)
                 {
                     if (!await _userManager.IsEmailConfirmedAsync(user))
                     {
+
+                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                        var callbackUrl = Url.Action(nameof(ConfirmEmail), "account", new { userid = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+
+                        await _emailSender.SendEmailAsync(model.Email, "AJE Group - Confirme su cuenta",
+                            $"Por favor confirme su cuenta haciendo click <a href='{callbackUrl}'>AQUI</a>");
+
+
+
                         ModelState.AddModelError(string.Empty,
                                       "Tiene que confirmar su cuenta de correo electrónico");
                         return View(model);
@@ -160,7 +171,7 @@ namespace AjeGroupCore.Controllers
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     Birthday = model.Birthday,
-                    PhoneNumber = PhoneFormatter(model.PhoneNumber),
+                    PhoneNumber = Helpers.Helpers.PhoneFormatter(model.PhoneNumber),
                     SecretQuestion = model.SecretQuestion,
                     SecretResponse = model.SecretResponse
                 };
@@ -190,15 +201,6 @@ namespace AjeGroupCore.Controllers
         }
 
 
-        public string PhoneFormatter(string phone)
-        {
-            var myPhone = phone.Replace("(", string.Empty);
-            myPhone = myPhone.Replace(")", string.Empty);
-            myPhone = myPhone.Replace("-", string.Empty);
-            myPhone = myPhone.Replace(" ", string.Empty);
-
-            return myPhone;
-        }
 
         //
         // POST: /Account/Logout
@@ -235,7 +237,9 @@ namespace AjeGroupCore.Controllers
                 ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
                 return View(nameof(Login));
             }
+
             var info = await _signInManager.GetExternalLoginInfoAsync();
+
             if (info == null)
             {
                 return RedirectToAction(nameof(Login));
@@ -243,6 +247,7 @@ namespace AjeGroupCore.Controllers
 
             // Sign in the user with this external login provider if the user already has a login.
             var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+
             if (result.Succeeded)
             {
                 _logger.LogInformation(5, "User logged in with {Name} provider.", info.LoginProvider);
@@ -277,12 +282,28 @@ namespace AjeGroupCore.Controllers
             {
                 // Get the information about the user from the external login provider
                 var info = await _signInManager.GetExternalLoginInfoAsync();
+
                 if (info == null)
                 {
                     return View("ExternalLoginFailure");
                 }
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+
+             
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Birthday = model.Birthday,
+                    PhoneNumber = Helpers.Helpers.PhoneFormatter(model.PhoneNumber),
+                    SecretQuestion = model.SecretQuestion,
+                    SecretResponse = model.SecretResponse
+                };
+
+
                 var result = await _userManager.CreateAsync(user);
+
                 if (result.Succeeded)
                 {
                     result = await _userManager.AddLoginAsync(user, info);
@@ -293,6 +314,7 @@ namespace AjeGroupCore.Controllers
                         return RedirectToLocal(returnUrl);
                     }
                 }
+
                 AddErrors(result);
             }
 
@@ -340,6 +362,13 @@ namespace AjeGroupCore.Controllers
 
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
+                    var code1 = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    var callbackUrl1 = Url.Action(nameof(ConfirmEmail), "account", new { userid = user.Id, code = code1 }, protocol: HttpContext.Request.Scheme);
+
+                    await _emailSender.SendEmailAsync(model.Email, "AJE Group - Confirme su cuenta",
+                        $"Por favor confirme su cuenta haciendo click <a href='{callbackUrl1}'>AQUI</a>");
+
                     // Don't reveal that the user does not exist or is not confirmed
                     return View("ForgotPasswordConfirmation");
                 }
@@ -386,7 +415,9 @@ namespace AjeGroupCore.Controllers
             {
                 return View(model);
             }
+
             var user = await _userManager.FindByEmailAsync(model.Email);
+
             if (user == null)
             {
                 // Don't reveal that the user does not exist

@@ -11,9 +11,10 @@ namespace AjeGroupCore.Models
         [Display(Name = "Pregunta secreta")]
         public string SecretQuestion { get; set; }
 
-        [Display(Name = "Respuesta")]
+        [Display(Name = "Respuesta secreta")]
         public string SecretResponse { get; set; }
 
+        [Display(Name = "Respuesta")]
         public string Token { get; set; }
 
         public string Provider { get; set; }

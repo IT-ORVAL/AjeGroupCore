@@ -1,15 +1,18 @@
-﻿@model RegisterViewModel
+﻿@model EditUserViewModel
 @{
-    ViewData["Title"] = "Registro";
+    ViewData["Title"] = "Editar Información de Usuario";
 }
 
 <h2>@ViewData["Title"]</h2>
 
-<form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
-    <h4>Crear una nueva cuenta</h4>
+<form asp-controller="Manage" asp-action="Edit" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
+    <h4>Modifique la información de su cuenta</h4>
     <hr />
 
     <div asp-validation-summary="All" class="text-danger"></div>
+
+    <input type="hidden" asp-for="Id" />
+
 
     <div class="form-group">
         <label asp-for="FirstName" class="col-md-2 control-label"></label>
@@ -27,22 +30,6 @@
         </div>
     </div>
 
-    <div class="form-group">
-        <label asp-for="Email" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="Email" class="form-control" type="email" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="PhoneNumber" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="PhoneNumber" class="form-control" type="text" id="mask_phone" />
-            <span class="help-block"> +(999) 9999-9999 </span>
-            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-        </div>
-    </div>
 
     <div class="form-group">
         <label asp-for="Birthday" class="col-md-2 control-label"></label>
@@ -54,25 +41,8 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="Password" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="Password" class="form-control" type="password"/>
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="ConfirmPassword" class="col-md-2 control-label"></label>
-        <div class="col-md-10">
-            <input asp-for="ConfirmPassword" class="form-control" type="password"/>
-            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-        </div>
-    </div>
-
-    <div class="form-group">
         <label asp-for="SecretQuestion" class="col-md-2 control-label"></label>
         <div class="col-md-10">
-            @*<input asp-for="SecretQuestion" class="form-control" />*@
 
             <select asp-for="SecretQuestion" class="form-control">
                 <option value="¿Cuál es su color favorito?">¿Cuál es su color favorito?</option>
@@ -94,11 +64,15 @@
         </div>
     </div>
 
+
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-primary">Registrar</button>
+            <button type="submit" class="btn btn-primary">Modificar</button>
+            <a asp-action="Index" style="margin-left:2rem;">Regresar</a>
         </div>
+
     </div>
+
 
 </form>
 

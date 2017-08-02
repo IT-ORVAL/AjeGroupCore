@@ -19,12 +19,9 @@
     <None Remove="Properties\PublishProfiles\AjeGroupCore - Web Deploy.pubxml" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Include="wwwroot\js\metronic\jquery.inputmask.bundle.min.js" />
-  </ItemGroup>
-
 
   <!--<ItemGroup>
+      <Content Include="wwwroot\js\metronic\jquery.inputmask.bundle.min.js" />
     <Content Include="wwwroot\html\ExampleFrame.html" />
     <Content Include="wwwroot\html\iFrameChatBot.cshtml" />
     <Content Include="wwwroot\js\chatbot-vca.js" />
@@ -112,7 +109,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Data\Migrations\" />
     <Folder Include="Properties\PublishProfiles\" />
   </ItemGroup>
   <ItemGroup>

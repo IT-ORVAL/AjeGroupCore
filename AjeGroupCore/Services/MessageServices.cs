@@ -50,15 +50,29 @@ namespace AjeGroupCore.Services
 
         public Task SendSmsAsync(string number, string message)
         {
-            var accountSid = Options.SMSAccountIdentification;
-            var authToken = Options.SMSAccountPassword;
+            try
+            {
+                var accountSid = Options.SMSAccountIdentification;
+                var authToken = Options.SMSAccountPassword;
 
-            TwilioClient.Init(accountSid, authToken);
+                TwilioClient.Init(accountSid, authToken);
 
-            var msg = MessageResource.Create(
-              to: new PhoneNumber(number),
-              from: new PhoneNumber(Options.SMSAccountFrom),
-              body: message);
+                number = "+" + number;
+
+                var msg = MessageResource.Create(
+                  to: new PhoneNumber(number),
+                  from: new PhoneNumber(Options.SMSAccountFrom),
+                  body: message);
+
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine(ex.InnerException);
+            }
+
+           
+
             return Task.FromResult(0);
         }
     }

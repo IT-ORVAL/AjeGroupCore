@@ -11,6 +11,11 @@
     <hr />
 
     <dl class="dl-horizontal">
+        <dt>Datos Personales:</dt>
+        <dd>
+            <a asp-controller="Manage" asp-action="Edit" class="btn-bracketed">Editar</a>
+        </dd>
+
         <dt>Clave:</dt>
         <dd>
             @if (Model.HasPassword)
@@ -22,6 +27,7 @@
                 <a asp-controller="Manage" asp-action="SetPassword" class="btn-bracketed">Crear</a>
             }
         </dd>
+
         <dt>Redes Sociales:</dt>
         <dd>
 

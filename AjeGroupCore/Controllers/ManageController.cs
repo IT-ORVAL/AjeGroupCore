@@ -10,6 +10,7 @@ using Microsoft.Extensions.Options;
 using AjeGroupCore.Models;
 using AjeGroupCore.Models.ManageViewModels;
 using AjeGroupCore.Services;
+using AjeGroupCore.Data;
 
 namespace AjeGroupCore.Controllers
 {
@@ -23,13 +24,16 @@ namespace AjeGroupCore.Controllers
         private readonly ISmsSender _smsSender;
         private readonly ILogger _logger;
 
+        private readonly ApplicationDbContext _context;
+
         public ManageController(
           UserManager<ApplicationUser> userManager,
           SignInManager<ApplicationUser> signInManager,
           IOptions<IdentityCookieOptions> identityCookieOptions,
           IEmailSender emailSender,
           ISmsSender smsSender,
-          ILoggerFactory loggerFactory)
+          ILoggerFactory loggerFactory,
+          ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -37,6 +41,7 @@ namespace AjeGroupCore.Controllers
             _emailSender = emailSender;
             _smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<ManageController>();
+            _context = context;
         }
 
         //
@@ -108,12 +113,18 @@ namespace AjeGroupCore.Controllers
             }
             // Generate the token and send it
             var user = await GetCurrentUserAsync();
+
             if (user == null)
             {
                 return View("Error");
             }
+
+            model.PhoneNumber = Helpers.Helpers.PhoneFormatter(model.PhoneNumber);
+
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, model.PhoneNumber);
+
             await _smsSender.SendSmsAsync(model.PhoneNumber, "Su código de seguridad es: " + code);
+
             return RedirectToAction(nameof(VerifyPhoneNumber), new { PhoneNumber = model.PhoneNumber });
         }
 
@@ -155,6 +166,7 @@ namespace AjeGroupCore.Controllers
         public async Task<IActionResult> VerifyPhoneNumber(string phoneNumber)
         {
             var user = await GetCurrentUserAsync();
+
             if (user == null)
             {
                 return View("Error");
@@ -175,6 +187,7 @@ namespace AjeGroupCore.Controllers
                 return View(model);
             }
             var user = await GetCurrentUserAsync();
+
             if (user != null)
             {
                 var result = await _userManager.ChangePhoneNumberAsync(user, model.PhoneNumber, model.Code);
@@ -226,10 +239,13 @@ namespace AjeGroupCore.Controllers
             {
                 return View(model);
             }
+
             var user = await GetCurrentUserAsync();
+
             if (user != null)
             {
                 var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
@@ -340,6 +356,67 @@ namespace AjeGroupCore.Controllers
             }
             return RedirectToAction(nameof(ManageLogins), new { Message = message });
         }
+
+
+        //
+        // GET: /Manage/Edit
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> Edit()
+        {
+            var user = await GetCurrentUserAsync();
+
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Intento de ingreso inválido");
+
+                return View(nameof(Index));
+            }
+
+
+            EditUserViewModel model = new EditUserViewModel()
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Birthday = user.Birthday,
+                SecretQuestion = user.SecretQuestion,
+                SecretResponse = user.SecretResponse
+            };
+
+
+            return View(model);
+        }
+
+
+        //
+        // POST: /Account/Register
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditUserViewModel model)
+        {
+
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByIdAsync(model.Id);
+
+                user.FirstName = model.FirstName;
+                user.LastName = model.LastName;
+                user.Birthday = model.Birthday;
+                user.SecretQuestion = model.SecretQuestion;
+                user.SecretResponse = model.SecretResponse;
+
+                //add user to the datacontext (database) and save changes
+                _context.Update(user);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction("Index", "Manage");
+            }
+
+            return View(model);
+        }
+
 
         #region Helpers
 

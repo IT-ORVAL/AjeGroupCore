@@ -8,7 +8,7 @@
 <form asp-controller="Manage" asp-action="VerifyPhoneNumber" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal">
     <input asp-for="PhoneNumber" type="hidden" />
 
-    <h4>Confirme el código enviado para agregar su teléfono</h4>
+    <h4>Confirme el código enviado para agregar su teléfono +@Model.PhoneNumber</h4>
 
     <h5>@ViewData["Status"]</h5>
 
