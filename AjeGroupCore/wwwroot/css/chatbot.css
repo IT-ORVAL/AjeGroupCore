@@ -80,6 +80,28 @@ a.chatButton {
     margin: 1rem;
 }
 
+div.chatCarousel {
+    width: 21rem !important;
+    height: 18rem;
+}
+
+div.chatCarousel ol.carousel-indicators {
+    bottom: -0.5rem;
+}
+
+div.chatCarousel ol.carousel-indicators .active {
+    background-color: dimgrey;
+}
+
+div.chatCarousel > div.carousel-inner > .item > img {
+    height: 18rem;
+}
+
+@media screen and (max-width: 767px) {
+    div.chatCarousel > div.carousel-caption {
+        display: inherit;
+    }
+}
 
 input[type=text], input[type=email], input[type=date], input[type=password], input.form-control, select.form-control {
     /*background-color: transparent;*/

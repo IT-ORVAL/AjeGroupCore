@@ -139,17 +139,20 @@ namespace AjeGroupCore.WebChat
                         {
                             Buttons = new List<ButtonTemplate>()
                             {
-                                new ButtonTemplate() { HrefLink = "", Text = "Crear Ticket" },
-                                new ButtonTemplate() { HrefLink = "", Text = "Consultar Ticket" },
+                                new ButtonTemplate() { HrefLink = "javascript:void();", Text = "Crear Ticket" },
+                                new ButtonTemplate() { HrefLink = "javascript:void();", Text = "Consultar Ticket" },
                             }
                         };
-
-
 
                         _attachment = ButtonListConstructor(_menu);
 
                         break;
 
+                    case "productos":
+
+                        _attachment = CarouselConstructor(GetCarouselList());
+
+                        break;
                     default:
                         break;
                 }
@@ -236,7 +239,7 @@ namespace AjeGroupCore.WebChat
 
                 _forecast =
                     "<div id='weather_widget' class='weather_widget'>" +
-                    "<div id= 'weather_widget_city_name' class='weather_widget_city_name'>Clima de " + city + "</div>" +
+                    //"<div id= 'weather_widget_city_name' class='weather_widget_city_name'>Clima de " + city + "</div>" +
                     "<h3 id= 'weather_widget_temperature' class='weather_widget_temperature'>" +
                     "<img src='" + _urlIcon + "'> " + _temperature + "°C</h3>" +
                     "<div id='weather_widget_main' class='weather_widget_main'>" + _description + "</div>";
@@ -245,6 +248,83 @@ namespace AjeGroupCore.WebChat
             }
 
             return _forecast;
+
+        }
+
+        private CarouselTemplate GetCarouselList()
+        {
+            CarouselTemplate _carousel = new CarouselTemplate()
+            {
+                CarouselName = "CarouselProductos",
+                Elements = new List<ElementTemplate>()
+                            {
+                                new ElementTemplate()
+                                {
+                                    Img_Url = "images/products/cool_tea.png",
+                                    Title = "Cool Tea",
+                                    Buttons = new List<ButtonTemplate>()
+                                    {
+                                        new ButtonTemplate() { Text = "Ver más", HrefLink = "javascript:void();" }
+                                    }
+                                },
+                                new ElementTemplate()
+                                {
+                                    Img_Url = "images/products/volt.jpg",
+                                    Title = "Volt",
+                                    Buttons = new List<ButtonTemplate>()
+                                    {
+                                        new ButtonTemplate() { Text = "Ver más", HrefLink = "javascript:void();" }
+                                    }
+                                },
+                                new ElementTemplate()
+                                {
+                                    Img_Url = "images/products/sporade.jpg",
+                                    Title = "Sporade",
+                                    Buttons = new List<ButtonTemplate>()
+                                    {
+                                        new ButtonTemplate() { Text = "Ver más", HrefLink = "javascript:void();" }
+                                    }
+                                },
+                                new ElementTemplate()
+                                {
+                                    Img_Url = "images/products/cifrut.png",
+                                    Title = "Cifrut",
+                                    Buttons = new List<ButtonTemplate>()
+                                    {
+                                        new ButtonTemplate() { Text = "Ver más", HrefLink = "javascript:void();" }
+                                    }
+                                },
+                                new ElementTemplate()
+                                {
+                                    Img_Url = "images/products/big_cola.jpg",
+                                    Title = "Big Cola",
+                                    Buttons = new List<ButtonTemplate>()
+                                    {
+                                        new ButtonTemplate() { Text = "Ver más", HrefLink = "javascript:void();" }
+                                    }
+                                },
+                                new ElementTemplate()
+                                {
+                                    Img_Url = "images/products/agua_cielo.png",
+                                    Title = "Cielo",
+                                    Buttons = new List<ButtonTemplate>()
+                                    {
+                                        new ButtonTemplate() { Text = "Ver más", HrefLink = "javascript:void();" }
+                                    }
+                                },
+                                new ElementTemplate()
+                                {
+                                    Img_Url = "images/products/pulp.png",
+                                    Title = "Pulp",
+                                    Buttons = new List<ButtonTemplate>()
+                                    {
+                                        new ButtonTemplate() { Text = "Ver más", HrefLink = "javascript:void();" }
+                                    }
+                                }
+                            }
+            };
+
+            return _carousel;
 
         }
 
