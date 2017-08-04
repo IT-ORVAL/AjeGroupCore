@@ -11,6 +11,7 @@ using AjeGroupCore.Models;
 using AjeGroupCore.Models.ManageViewModels;
 using AjeGroupCore.Services;
 using AjeGroupCore.Data;
+using AjeGroupCore.WebChat;
 
 namespace AjeGroupCore.Controllers
 {
@@ -373,6 +374,7 @@ namespace AjeGroupCore.Controllers
                 return View(nameof(Index));
             }
 
+            var _decrypt = Helpers.Helpers.DecryptString(user.SecretResponse, ChatBotController._keyEncode);
 
             EditUserViewModel model = new EditUserViewModel()
             {
@@ -381,7 +383,7 @@ namespace AjeGroupCore.Controllers
                 LastName = user.LastName,
                 Birthday = user.Birthday,
                 SecretQuestion = user.SecretQuestion,
-                SecretResponse = user.SecretResponse
+                SecretResponse = _decrypt
             };
 
 
@@ -400,12 +402,13 @@ namespace AjeGroupCore.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByIdAsync(model.Id);
+                var _encrypt = Helpers.Helpers.EncryptString(model.SecretResponse, ChatBotController._keyEncode);
 
                 user.FirstName = model.FirstName;
                 user.LastName = model.LastName;
                 user.Birthday = model.Birthday;
                 user.SecretQuestion = model.SecretQuestion;
-                user.SecretResponse = model.SecretResponse;
+                user.SecretResponse = _encrypt;
 
                 //add user to the datacontext (database) and save changes
                 _context.Update(user);

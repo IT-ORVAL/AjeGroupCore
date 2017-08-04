@@ -94,7 +94,7 @@ namespace FacebookAPI.FacebookChat
 
                             foreach (string item in result.Output.Text)
                             {
-                                PostJsonAsync(GetTextFB(message.sender.id, item));
+                                PostJson(GetTextFB(message.sender.id, item));
                             }
                         }
 
@@ -113,7 +113,7 @@ namespace FacebookAPI.FacebookChat
         }
 
 
-        private async void PostJsonAsync(object data)
+        private async void PostJson(object data)
         {
             var access_token = "EAAEZBI9ILQHoBALxxwihl2FPHBmY5a5A8jJBKqzsuZBt6ulBcKZAcZCkOARFXlhsSGGjMkM698BO654gbkuK3euA4XxozlmzEXFKF7aopzRH0NoZCBOk5OxTTJcpxdHWphZAyZA55sjbcu1e4nLa0u01dcTMWq3LMO0lhDC2TbijgZDZD";
             string url = "https://graph.facebook.com/v2.6/me/messages?access_token=" + access_token;
@@ -162,8 +162,8 @@ namespace FacebookAPI.FacebookChat
 
 
             //// ASp Net Core Alternative  ***************************************
-            //encoder
-            UTF8Encoding enc = new UTF8Encoding();
+            ////encoder
+            //UTF8Encoding enc = new UTF8Encoding();
 
            
             //Create request
@@ -173,8 +173,13 @@ namespace FacebookAPI.FacebookChat
 
             //Set data in request
             Stream dataStream = await request.GetRequestStreamAsync();
-            dataStream.Write(enc.GetBytes(json), 0, json.Length);
 
+            //dataStream.Write(enc.GetBytes(json), 0, json.Length);
+
+            using (var requestWriter = new StreamWriter(dataStream))
+            {
+                requestWriter.Write(json);
+            }
 
             //Get the response
             WebResponse wr = await request.GetResponseAsync();

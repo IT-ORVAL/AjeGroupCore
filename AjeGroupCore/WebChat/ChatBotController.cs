@@ -28,6 +28,8 @@ namespace AjeGroupCore.WebChat
         static Context context;
         public static WatsonCredentials _credentials;
 
+        public static string _keyEncode = "E546C8DF278CD5931069B522E695D4F2";
+
         private readonly UserManager<ApplicationUser> _userManager;
 
         public ChatBotController(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager)
@@ -85,9 +87,9 @@ namespace AjeGroupCore.WebChat
 
                     case "secretToValidate":
                         var user = await _userManager.FindByEmailAsync(context.Email);
+                        var _decrypt = Helpers.Helpers.DecryptString(user?.SecretResponse, _keyEncode);
 
-
-                        if (msg == user?.SecretResponse)
+                        if (msg == _decrypt)
                         {
                             context.Valid = true;
                         }

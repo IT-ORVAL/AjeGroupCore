@@ -83,6 +83,10 @@ function sendRequest(init) {
             break;
 
         default:
+            if (init !== true) {
+                appendMessage(true, msg);
+            }
+
             break;
     }
 

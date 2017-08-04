@@ -15,6 +15,7 @@ using AjeGroupCore.Services;
 using OtpSharp;
 using System.Net;
 using System.Globalization;
+using AjeGroupCore.WebChat;
 
 namespace AjeGroupCore.Controllers
 {
@@ -165,6 +166,8 @@ namespace AjeGroupCore.Controllers
 
                 //DateTime dt2 = DateTime.ParseExact(x, "yyyy/MM/dd", CultureInfo.InvariantCulture);
 
+                var _encrypt = Helpers.Helpers.EncryptString(model.SecretResponse, ChatBotController._keyEncode);
+
                 var user = new ApplicationUser {
                     UserName = model.Email,
                     Email = model.Email,
@@ -173,7 +176,7 @@ namespace AjeGroupCore.Controllers
                     Birthday = model.Birthday,
                     PhoneNumber = Helpers.Helpers.PhoneFormatter(model.PhoneNumber),
                     SecretQuestion = model.SecretQuestion,
-                    SecretResponse = model.SecretResponse
+                    SecretResponse = _encrypt
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -647,38 +650,6 @@ namespace AjeGroupCore.Controllers
         }
 
 
-        // GET: /Account/VerifyCode
-        [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> SecretAuth(string code, string provider, bool rememberMe, string returnUrl = null)
-        {
-            // Require that the user has already logged in via username/password or external login
-            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
-
-            if (user == null)
-            {
-                return View("Error");
-            }
-
-            string message = "Verificación de 2 pasos con Pregunta Secreta";
-
-            var model = new SecretAuthViewModel
-            {
-                SecretQuestion = user.SecretQuestion,
-                Provider = provider,
-                RememberMe = rememberMe,
-                ReturnUrl = returnUrl,
-                Code = code,
-                Response = user.SecretResponse
-            };
-
-            ViewData["Message"] = message;
-
-            return View(model);
-        }
-
-
-
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> GoogleTokenAsync(GoogleAuthenticatorViewModel model)
@@ -723,6 +694,39 @@ namespace AjeGroupCore.Controllers
 
 
 
+
+            return View(model);
+        }
+
+
+
+
+        // GET: /Account/VerifyCode
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> SecretAuth(string code, string provider, bool rememberMe, string returnUrl = null)
+        {
+            // Require that the user has already logged in via username/password or external login
+            var user = await _signInManager.GetTwoFactorAuthenticationUserAsync();
+
+            if (user == null)
+            {
+                return View("Error");
+            }
+
+            string message = "Verificación de 2 pasos con Pregunta Secreta";
+
+            var model = new SecretAuthViewModel
+            {
+                SecretQuestion = user.SecretQuestion,
+                Provider = provider,
+                RememberMe = rememberMe,
+                ReturnUrl = returnUrl,
+                Code = code,
+                Response = user.SecretResponse
+            };
+
+            ViewData["Message"] = message;
 
             return View(model);
         }
