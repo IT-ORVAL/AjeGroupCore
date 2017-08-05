@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using static AjeGroupCore.WebChat.Models.WebChatTemplates;
 using AjeGroupCore.WebChat.Models;
+using AjeGroupCore.WebChat.AjeGroup;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -44,7 +45,7 @@ namespace AjeGroupCore.WebChat
 
        
         [HttpPost]
-        public async Task<JsonResult> MessageChatAsync(string msg, bool isInit, bool isValid)
+        public async Task<JsonResult> MessageChatAsync(string msg, bool isInit, bool isValid, string actionPayload)
         {
             string _attachment = null;
 
@@ -52,6 +53,16 @@ namespace AjeGroupCore.WebChat
             {
                 context = null;
 
+            }
+
+            if (!string.IsNullOrEmpty(actionPayload))
+            {
+                if (context == null)
+                {
+                    context = new Context();
+                }
+
+                context.Action = actionPayload;
             }
 
             if (context != null)
@@ -108,6 +119,23 @@ namespace AjeGroupCore.WebChat
 
                         break;
 
+                    case "ListPerfiles":
+                        List<string> _listPerfiles = await SOAPservice.InvokeSOAPServiceAsync();
+                        context.Action = null;
+
+                        MessageRequest _message = new MessageRequest()
+                        {
+                            Output = new OutputData()
+                            {
+                                Text = _listPerfiles
+                            },
+                            Context = context
+                        };
+
+                        var obj = JsonConvert.SerializeObject(_message);
+
+                        return Json(obj);
+
                     default:
                         break;
                 }
@@ -141,7 +169,7 @@ namespace AjeGroupCore.WebChat
                         {
                             Buttons = new List<ButtonTemplate>()
                             {
-                                new ButtonTemplate() { HrefLink = "javascript:void();", Text = "Crear Ticket" },
+                                new ButtonTemplate() { HrefLink = "javascript:sendRequest(false,'ListPerfiles',true);", Text = "Listado de Perfiles" },
                                 new ButtonTemplate() { HrefLink = "javascript:void();", Text = "Consultar Ticket" },
                             }
                         };

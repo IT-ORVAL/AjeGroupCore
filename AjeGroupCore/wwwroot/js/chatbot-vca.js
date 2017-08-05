@@ -15,7 +15,7 @@ $(function () {
 
 
 
-function sendRequest(init) {
+function sendRequest(init, _action, _isPayload) {
     var url = "/Api/ChatBot/";
 
     var msg = $("#textInput").val();
@@ -34,9 +34,15 @@ function sendRequest(init) {
         return;
     }
 
+    if (_isPayload) {
+        _contextAction == _action;
+    }
+
     if (init !== true) {
         if (_contextAction === false || _contextAction === undefined) {
-            appendMessage(true, msg);
+            if (_isPayload !== true) {
+                appendMessage(true, msg);
+            }
         }
     }
 
@@ -83,7 +89,7 @@ function sendRequest(init) {
             break;
 
         default:
-            if (init !== true) {
+            if (init !== true && _isPayload == false) {
                 appendMessage(true, msg);
             }
 
@@ -93,7 +99,7 @@ function sendRequest(init) {
 
 
 
-    $.post(url, { msg: msg, isInit: init, isValid: valid }, function (result) {
+    $.post(url, { msg: msg, isInit: init, isValid: valid, actionPayload: _action }, function (result) {
         //var obj = JSON.parse(JSON.stringify(result))
         var obj = JSON.parse(result)
         var total = obj.output.text.length;
@@ -151,10 +157,11 @@ function resetInputChat() {
 
 }
 
+
 function resetChat() {
     _contextAction = "";
     $("#scrollingChat").text(null);
-    sendRequest(true);
+    sendRequest(true, null, false);
 }
 
 function appendMessage(isUser, message) {
