@@ -182,14 +182,14 @@ function resetChat() {
 function appendMessage(isUser, message) {
     var nombre = "Watson";
     var clase = "direct-chat-msg";
-    var imagen = "/images/user1-128x128.jpg";
+    var imagen = "/images/logoaje.jpg";
     var alig1 = "left";
     var alig2 = "right";
 
     if (isUser) {
         nombre = "Usuario";
         clase = "direct-chat-msg right";
-        imagen = "/images/user3-128x128.jpg";
+        imagen = "/images/fruta.png";
         alig1 = "right";
         alig2 = "left";
     }

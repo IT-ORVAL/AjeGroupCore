@@ -131,9 +131,15 @@ namespace AjeGroupCore.WebChat
                         List<string> _listPerfiles = await SOAPservice.GetListPerfilesAsync();
                         context.Action = null;
 
-                        MessageRequest _message = new MessageRequest();
-                        _message.Output.Text.AddRange(_listPerfiles);
-                        _message.Context = context;
+                        MessageRequest _message = new MessageRequest()
+                        {
+
+                            Output = new OutputData()
+                            {
+                                Text = _listPerfiles
+                            },
+                            Context = context
+                        };
 
                         var obj = JsonConvert.SerializeObject(_message);
 
@@ -142,26 +148,45 @@ namespace AjeGroupCore.WebChat
                     case "AddServiceCall":
 
                         //Test
+                        //if (string.IsNullOrEmpty(context.Email))
+                        //{
+                        //    context.Email = "vcaperuadmin@ajegroup.com";
+                        //}
+
                         if (string.IsNullOrEmpty(context.Email))
                         {
                             context.Email = "vcaperuuser@ajegroup.com";
                         }
 
-                        //SOAPservice.ArandaUser _user = await SOAPservice.GetArandaUserInfo(context.Email);
 
-                        SOAPservice.ArandaUser _user = new SOAPservice.ArandaUser()
-                        {
-                            Email = context.Email
-                        };
+                        SOAPservice.ArandaUser _user = await SOAPservice.GetArandaUserInfo(context.Email);
 
                         SOAPservice.ArandaTicket ticket = await SOAPservice.SetArandaNewTicketAsync(_user);
 
-                        var msgTicket = string.Format("El ticket {0} ha sido creado con exito!", ticket.TicketNumber);
+                        string msgTicket;
 
+                        if (string.IsNullOrEmpty(ticket.TicketNumber))
+                        {
+                            msgTicket = "Correo electrónico no registrado en Aranda. No se pudo crear ticket.";
+                        }
+                        else
+                        {
+                            msgTicket = string.Format("El ticket {0} ha sido creado con exito!", ticket.TicketNumber);
+                        }
 
-                        MessageRequest _msgAddTicket = new MessageRequest();
-                        _msgAddTicket.Output.Text.Add(msgTicket);
-                        _msgAddTicket.Context = context;
+                        context.Action = null;
+
+                        MessageRequest _msgAddTicket = new MessageRequest()
+                        {
+                            Output = new OutputData()
+                            {
+                                Text = new List<string>()
+                                {
+                                    msgTicket
+                                }
+                            },
+                            Context = context
+                        };
 
                         var objAdTicket = JsonConvert.SerializeObject(_msgAddTicket);
 
@@ -258,17 +283,23 @@ namespace AjeGroupCore.WebChat
                     //_attachment = _attachment + "<a class='btn btn-default' href=javascript:getGoogleTokens('" +
                     //       context.Email + "');>Generar Tokens</a>";
 
-                    //SOAPservice.ArandaUser _user = await SOAPservice.GetArandaUserInfo(context.Email);
-
-                    SOAPservice.ArandaUser _user = new SOAPservice.ArandaUser()
-                    {
-                        Email = context.Email
-                    };
+                    SOAPservice.ArandaUser _user = await SOAPservice.GetArandaUserInfo(context.Email);
 
                     SOAPservice.ArandaTicket ticket = await SOAPservice.SetArandaNewTicketAsync(_user);
 
-                    var msgTicket = string.Format("El ticket {0} ha sido creado con exito!", ticket.TicketNumber);
-                  
+
+                    string msgTicket;
+
+                    if (string.IsNullOrEmpty(ticket.TicketNumber))
+                    {
+                        msgTicket = "Correo electrónico no registrado en Aranda. No se pudo crear ticket.";
+                    }
+                    else
+                    {
+                        msgTicket = string.Format("El ticket {0} ha sido creado con exito!", ticket.TicketNumber);
+                    }
+
+
                     result.Output.Text.Add(msgTicket);
 
                     break;
