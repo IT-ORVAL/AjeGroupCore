@@ -35,11 +35,11 @@ function sendRequest(init, _action, _isPayload) {
     }
 
     if (_isPayload) {
-        _contextAction == _action;
+        _contextAction = _action;
     }
 
     if (init !== true) {
-        if (_contextAction === false || _contextAction === undefined) {
+        if (!_contextAction) {
             if (_isPayload !== true) {
                 appendMessage(true, msg);
             }
@@ -99,12 +99,13 @@ function sendRequest(init, _action, _isPayload) {
 
 
 
-    $.post(url, { msg: msg, isInit: init, isValid: valid, actionPayload: _action }, function (result) {
+    $.post(url, { msg: msg, isInit: init, isValid: valid, actionPayload: _contextAction }, function (result) {
         //var obj = JSON.parse(JSON.stringify(result))
         var obj = JSON.parse(result)
         var total = obj.output.text.length;
 
         _contextAction = obj.context.action;
+        valid = obj.context.valid;
 
         for (var i = 0; i < total; i++) {
             //NotificationToast("sucess", obj.output.text[i], "Watson");
@@ -136,10 +137,24 @@ function sendRequest(init, _action, _isPayload) {
             resetInputChat();
 
         })
-        .fail(function (error) {
+        .fail(function (jqXHR, textStatus, errorThrown) {
             resetInputChat();
+            var _errorMsg;
 
-            NotificationToast("error", error.statusText, "Error");
+            switch (jqXHR.status) {
+                case 500:
+                    _errorMsg = "Error en el servidor";
+                    break;
+                case 404:
+                    _errorMsg = "No se ha encontrado el recurso";
+                    break;
+                default:
+                    _errorMsg = "Error de conexión a Internet";
+                    break;
+            }
+
+           
+                NotificationToast("error", _errorMsg, "Error");
         });
 
 }

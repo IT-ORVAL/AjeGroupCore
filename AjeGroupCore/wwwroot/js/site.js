@@ -1,6 +1,13 @@
 ﻿// Write your Javascript code.
 
+    if (navigator.onLine) {
+        //alert('You are online!');
+    } else {
+        swal('Su conexión a Internet se ha desconectado!');
+    }
+
 $(function () {
+
 
     $('.active-notification').on('click', function () {
         var msg = $(this).text();

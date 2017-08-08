@@ -1,22 +1,19 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using IBM.VCA.Watson.Watson.Model;
-using static IBM.VCA.Watson.Watson.WatsonConversationService;
-using Newtonsoft.Json;
-using IBM.VCA.WebChat.Weather;
-using static AjeGroupCore.WebChat.GoogleUser;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
-using AjeGroupCore.Helpers;
-using Microsoft.AspNetCore.Http;
+﻿using AjeGroupCore.Helpers;
 using AjeGroupCore.Models;
-using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
-using static AjeGroupCore.WebChat.Models.WebChatTemplates;
-using AjeGroupCore.WebChat.Models;
 using AjeGroupCore.WebChat.AjeGroup;
+using IBM.VCA.Watson.Watson.Model;
+using IBM.VCA.WebChat.Weather;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using static AjeGroupCore.WebChat.GoogleUser;
+using static AjeGroupCore.WebChat.Models.WebChatTemplates;
+using static IBM.VCA.Watson.Watson.WatsonConversationService;
+
 
 namespace AjeGroupCore.WebChat
 {
@@ -72,6 +69,11 @@ namespace AjeGroupCore.WebChat
                 switch (context.Action)
                 {
                     case "emailToValidate":
+
+                        if (!context.Valid)
+                        {
+                            break;
+                        }
                         MyGoogleUserInfo _userinfo = GetGoogleUserInfo(msg);
 
                         //if (!GoogleUser.IsEmailRegistered(msg))
@@ -98,7 +100,10 @@ namespace AjeGroupCore.WebChat
 
                     case "secretToValidate":
                         var user = await _userManager.FindByEmailAsync(context.Email);
-                        var _decrypt = Helpers.Helpers.DecryptString(user?.SecretResponse, _keyEncode);
+
+                        //var _decrypt = Helpers.Helpers.DecryptString(user?.SecretResponse, _keyEncode);
+
+                        var _decrypt = user?.SecretResponse, ;
 
                         if (msg == _decrypt)
                         {
@@ -120,7 +125,7 @@ namespace AjeGroupCore.WebChat
                         break;
 
                     case "ListPerfiles":
-                        List<string> _listPerfiles = await SOAPservice.InvokeSOAPServiceAsync();
+                        List<string> _listPerfiles = await SOAPservice.GetListPerfilesAsync();
                         context.Action = null;
 
                         MessageRequest _message = new MessageRequest()
@@ -135,6 +140,41 @@ namespace AjeGroupCore.WebChat
                         var obj = JsonConvert.SerializeObject(_message);
 
                         return Json(obj);
+
+                    case "AddServiceCall":
+
+                        //Test
+                        if (string.IsNullOrEmpty(context.Email))
+                        {
+                            context.Email = "vcaperuuser@ajegroup.com";
+                        }
+
+                        //SOAPservice.ArandaUser _user = await SOAPservice.GetArandaUserInfo(context.Email);
+
+                        SOAPservice.ArandaUser _user = new SOAPservice.ArandaUser()
+                        {
+                            Email = context.Email
+                        };
+
+                        SOAPservice.ArandaTicket ticket = await SOAPservice.SetArandaNewTicketAsync(_user);
+
+                        var msgTicket = string.Format("El ticket {0} ha sido creado con exito!", ticket.TicketNumber);
+
+
+                        MessageRequest _msgAddTicket = new MessageRequest()
+                        {
+                            Output = new OutputData()
+                            {
+                                Text = new List<string>(){
+                                    msgTicket
+                                }
+                            },
+                            Context = context
+                        };
+
+                        var objAdTicket = JsonConvert.SerializeObject(_msgAddTicket);
+
+                        return Json(objAdTicket);
 
                     default:
                         break;
@@ -170,7 +210,7 @@ namespace AjeGroupCore.WebChat
                             Buttons = new List<ButtonTemplate>()
                             {
                                 new ButtonTemplate() { HrefLink = "javascript:sendRequest(false,'ListPerfiles',true);", Text = "Listado de Perfiles" },
-                                new ButtonTemplate() { HrefLink = "javascript:void();", Text = "Consultar Ticket" },
+                                new ButtonTemplate() { HrefLink = "javascript:sendRequest(false,'AddServiceCall',true);", Text = "Crear Ticket" },
                             }
                         };
 
@@ -226,6 +266,19 @@ namespace AjeGroupCore.WebChat
                     //_attachment = _attachment + "<br />";
                     //_attachment = _attachment + "<a class='btn btn-default' href=javascript:getGoogleTokens('" +
                     //       context.Email + "');>Generar Tokens</a>";
+
+                    //SOAPservice.ArandaUser _user = await SOAPservice.GetArandaUserInfo(context.Email);
+
+                    SOAPservice.ArandaUser _user = new SOAPservice.ArandaUser()
+                    {
+                        Email = context.Email
+                    };
+
+                    SOAPservice.ArandaTicket ticket = await SOAPservice.SetArandaNewTicketAsync(_user);
+
+                    var msgTicket = string.Format("El ticket {0} ha sido creado con exito!", ticket.TicketNumber);
+                  
+                    result.Output.Text.Add(msgTicket);
 
                     break;
                 default:
