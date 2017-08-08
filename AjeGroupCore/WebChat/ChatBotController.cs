@@ -74,6 +74,7 @@ namespace AjeGroupCore.WebChat
                         {
                             break;
                         }
+
                         MyGoogleUserInfo _userinfo = GetGoogleUserInfo(msg);
 
                         //if (!GoogleUser.IsEmailRegistered(msg))
@@ -100,10 +101,12 @@ namespace AjeGroupCore.WebChat
 
                     case "secretToValidate":
                         var user = await _userManager.FindByEmailAsync(context.Email);
+                        var _decrypt = Helpers.Helpers.DecryptString(user?.SecretResponse, _keyEncode);
 
-                        //var _decrypt = Helpers.Helpers.DecryptString(user?.SecretResponse, _keyEncode);
-
-                        var _decrypt = user?.SecretResponse, ;
+                        if (string.IsNullOrEmpty(_decrypt))
+                        {
+                            _decrypt = user?.SecretResponse;
+                        }
 
                         if (msg == _decrypt)
                         {
@@ -128,14 +131,9 @@ namespace AjeGroupCore.WebChat
                         List<string> _listPerfiles = await SOAPservice.GetListPerfilesAsync();
                         context.Action = null;
 
-                        MessageRequest _message = new MessageRequest()
-                        {
-                            Output = new OutputData()
-                            {
-                                Text = _listPerfiles
-                            },
-                            Context = context
-                        };
+                        MessageRequest _message = new MessageRequest();
+                        _message.Output.Text.AddRange(_listPerfiles);
+                        _message.Context = context;
 
                         var obj = JsonConvert.SerializeObject(_message);
 
@@ -161,16 +159,9 @@ namespace AjeGroupCore.WebChat
                         var msgTicket = string.Format("El ticket {0} ha sido creado con exito!", ticket.TicketNumber);
 
 
-                        MessageRequest _msgAddTicket = new MessageRequest()
-                        {
-                            Output = new OutputData()
-                            {
-                                Text = new List<string>(){
-                                    msgTicket
-                                }
-                            },
-                            Context = context
-                        };
+                        MessageRequest _msgAddTicket = new MessageRequest();
+                        _msgAddTicket.Output.Text.Add(msgTicket);
+                        _msgAddTicket.Context = context;
 
                         var objAdTicket = JsonConvert.SerializeObject(_msgAddTicket);
 
