@@ -91,6 +91,7 @@ function sendRequest(init, _action, _isPayload) {
         default:
             if (init !== true && _isPayload == false) {
                 appendMessage(true, msg);
+                valid = false;
             }
 
             break;
@@ -127,6 +128,7 @@ function sendRequest(init, _action, _isPayload) {
 
         if (_contextAction === "success") {
             NotificationToast("success", "Clave modificada con éxito!", "Confirmación");
+            valid = false;
         }
 
 

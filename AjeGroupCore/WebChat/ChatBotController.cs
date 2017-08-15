@@ -251,6 +251,7 @@ namespace AjeGroupCore.WebChat
             {
                 case "secretToValidate":
                     var user = await _userManager.FindByEmailAsync(context.Email);
+                    context.Valid = false;
 
                     if (user != null)
                     {
@@ -268,7 +269,7 @@ namespace AjeGroupCore.WebChat
                         };
 
                         //context.Valid = false;
-                        context = null;
+                        context = new Context();
                     }
 
 
@@ -299,7 +300,7 @@ namespace AjeGroupCore.WebChat
                         msgTicket = string.Format("El ticket {0} ha sido creado con exito!", ticket.TicketNumber);
                     }
 
-
+                    context = new Context();
                     result.Output.Text.Add(msgTicket);
 
                     break;
