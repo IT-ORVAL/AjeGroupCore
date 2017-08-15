@@ -1,0 +1,14 @@
+[Unit]
+Description=AJE Group Core Web Page
+
+[Service]
+WorkingDirectory=/usr/share/nginx/html/bin/Debug/netcoreapp1.1 
+xecStart=/usr/local/bin/dotnet /usr/share/nginx/html/bin/Debug/netcoreapp1.1/AjeGroupCore.dll
+Restart=always
+RestartSec=10  # Restart service after 10 seconds if dotnet service crashes
+SyslogIdentifier=ajegroup-web
+User=root
+Environment=ASPNETCORE_ENVIRONMENT=Production 
+
+[Install]
+WantedBy=multi-user.target
