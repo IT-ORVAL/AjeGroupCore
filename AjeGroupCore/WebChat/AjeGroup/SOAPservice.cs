@@ -173,6 +173,43 @@ namespace AjeGroupCore.WebChat.AjeGroup
         }
 
 
+        public static async Task<string> GetArandaProjectTicketAsync(string _ticket)
+        {
+            string model = string.Empty;
+
+            if (string.IsNullOrEmpty(_ticket))
+            {
+                return model;
+            }
+
+            XmlDocument xmlRequest = new XmlDocument();
+
+            xmlRequest.LoadXml($@"<?xml version=""1.0"" encoding=""utf-8""?>
+            <soap:Envelope xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:soap=""http://schemas.xmlsoap.org/soap/envelope/"">
+              <soap:Body>
+                <GetObject xmlns=""http://tempuri.org/"">
+                  <id>{_ticket}</id>
+                </GetObject>
+              </soap:Body>
+            </soap:Envelope>"
+            );
+
+            XmlDocument xmlResponse = await InvokeSOAPServiceAsync(xmlRequest, "http://172.36.0.141/asdkws/ServiceCall.asmx", "http://tempuri.org/GetObject");
+
+            XmlNodeList xnList = xmlResponse.GetElementsByTagName("GetObjectResult");
+
+  
+           
+            foreach (XmlNode item in xnList)
+            {
+                model = item["IdbyProject"].InnerText;
+            }
+
+
+            return model;
+        }
+
+
         public static async Task<ArandaUser> GetArandaUserInfo(string _email)
         {
 

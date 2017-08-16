@@ -75,6 +75,13 @@ namespace AjeGroupCore.WebChat
                             break;
                         }
 
+                        var userEmailToValidate = await _userManager.FindByEmailAsync(msg);
+
+                        if (userEmailToValidate.EmailConfirmed == false)
+                        {
+                            context.Valid = false;
+                        }
+
                         MyGoogleUserInfo _userinfo = GetGoogleUserInfo(msg);
 
                         //if (!GoogleUser.IsEmailRegistered(msg))
@@ -82,7 +89,7 @@ namespace AjeGroupCore.WebChat
                         //    context.Valid = false;
                         //}
 
-                        if (_userinfo == null)
+                        if (_userinfo == null || _userinfo.Suspended == true)
                         {
                             context.Valid = false;
                             //context = null;
@@ -123,6 +130,27 @@ namespace AjeGroupCore.WebChat
                         if (context.Valid == true && context.Password != null)
                         {
                             string goog = RunPasswordReset(context.Email, context.Password);
+
+                            if (goog.Contains("Error"))
+                            {
+                                context.Action = null;
+
+                                MessageRequest _msgGoog = new MessageRequest()
+                                {
+                                    Output = new OutputData()
+                                    {
+                                        Text = new List<string>()
+                                {
+                                    goog
+                                }
+                                    },
+                                    Context = context
+                                };
+
+                                context.Valid = false;
+
+                                return Json(JsonConvert.SerializeObject(_msgGoog));
+                            }
                         }
 
                         break;
@@ -288,7 +316,6 @@ namespace AjeGroupCore.WebChat
 
                     SOAPservice.ArandaTicket ticket = await SOAPservice.SetArandaNewTicketAsync(_user);
 
-
                     string msgTicket;
 
                     if (string.IsNullOrEmpty(ticket.TicketNumber))
@@ -297,7 +324,9 @@ namespace AjeGroupCore.WebChat
                     }
                     else
                     {
-                        msgTicket = string.Format("El ticket {0} ha sido creado con exito!", ticket.TicketNumber);
+                        string _IdbyProject = await SOAPservice.GetArandaProjectTicketAsync(ticket.TicketNumber);
+
+                        msgTicket = string.Format("El ticket {0} ha sido creado con exito!", _IdbyProject);
                     }
 
                     context = new Context();

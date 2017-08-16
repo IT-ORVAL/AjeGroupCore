@@ -76,7 +76,7 @@ namespace AjeGroupCore.WebChat
                 UsersResource.GetRequest getUser = directoryService.Users.Get(userkey);
                 User _user = getUser.Execute();
 
-                if (_user == null)
+                if (_user == null || _user.Suspended == true)
                 {
                     return false;
                 }
@@ -126,7 +126,8 @@ namespace AjeGroupCore.WebChat
                         IsEnforcedIn2Sv = _user.IsEnforcedIn2Sv,
                         Password = _user.Password,
                         Phones = _user.Phones,
-                        VerificationCodes = _verificationCodes
+                        VerificationCodes = _verificationCodes,
+                        Suspended = _user.Suspended
 
                     };
 
@@ -194,6 +195,7 @@ namespace AjeGroupCore.WebChat
         {
             try
             {
+                //vcaperuadmin@ajegroup.com Psw: maximo01
                 ////Set location for Google Token to be locally stored
                 var googleTokenLocation = Path.Combine(HomeController._wwwRoot.WebRootPath, GoogleFolder);
 
@@ -245,6 +247,8 @@ namespace AjeGroupCore.WebChat
             public string HashFunction { get; set; }
             public bool? IsAdmin { get; set; }
             public bool? IsEnforcedIn2Sv { get; set; }
+
+            public bool? Suspended { get; set; }
 
             public string Password { get; set; }
 

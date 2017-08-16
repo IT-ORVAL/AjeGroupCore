@@ -1,5 +1,6 @@
 ﻿var _contextAction;
 var _password;
+var _userName;
 
 $(function () {
     $(".collapse-chat").click(function () {
@@ -66,6 +67,11 @@ function sendRequest(init, _action, _isPayload) {
 
                 _contextAction = "emailToValidate";
                 valid = false;
+
+                appendMessage(false, "La clave debe ser mínimo de 8 caracteres");
+
+                resetInputChat();
+                return;
             }
             else {
                 valid = true;
@@ -131,6 +137,9 @@ function sendRequest(init, _action, _isPayload) {
             valid = false;
         }
 
+        if (obj.context.username !== null) {
+            _userName = obj.context.username;
+        }
 
         resetInputChat();
 
@@ -177,19 +186,28 @@ function resetInputChat() {
 
 function resetChat() {
     _contextAction = "";
+    _password = "";
+    _userName = "";
+
     $("#scrollingChat").text(null);
     sendRequest(true, null, false);
 }
 
 function appendMessage(isUser, message) {
-    var nombre = "Watson";
+    var nombre = "AjeBot";
     var clase = "direct-chat-msg";
     var imagen = "/images/logoaje.jpg";
     var alig1 = "left";
     var alig2 = "right";
 
     if (isUser) {
-        nombre = "Usuario";
+        if (_userName !== null && _userName !== undefined) {
+            nombre = _userName;
+        }
+        else {
+            nombre = "Usuario";
+        }
+
         clase = "direct-chat-msg right";
         imagen = "/images/fruta.png";
         alig1 = "right";
