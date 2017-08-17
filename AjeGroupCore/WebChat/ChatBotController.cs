@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -44,149 +45,276 @@ namespace AjeGroupCore.WebChat
         [HttpPost]
         public async Task<JsonResult> MessageChatAsync(string msg, bool isInit, bool isValid, string actionPayload)
         {
-            string _attachment = null;
-
-            if (isInit)
+            try
             {
-                context = null;
+                string _attachment = null;
 
-            }
-
-            if (!string.IsNullOrEmpty(actionPayload))
-            {
-                if (context == null)
+                if (isInit)
                 {
-                    context = new Context();
+                    context = null;
+
                 }
 
-                context.Action = actionPayload;
-            }
-
-            if (context != null)
-            {
-                context.Valid = isValid;
-
-                switch (context.Action)
+                if (!string.IsNullOrEmpty(actionPayload))
                 {
-                    case "emailToValidate":
+                    if (context == null)
+                    {
+                        context = new Context();
+                    }
 
-                        if (!context.Valid)
-                        {
-                            break;
-                        }
+                    context.Action = actionPayload;
+                }
 
-                        var userEmailToValidate = await _userManager.FindByEmailAsync(msg);
+                if (context != null)
+                {
+                    context.Valid = isValid;
 
-                        if (userEmailToValidate?.EmailConfirmed == false || userEmailToValidate == null)
-                        {
-                            context.Valid = false;
-                            break;
-                        }
+                    switch (context.Action)
+                    {
+                        case "emailToValidate":
 
-                        MyGoogleUserInfo _userinfo = GetGoogleUserInfo(msg);
-
-                        //if (!GoogleUser.IsEmailRegistered(msg))
-                        //{
-                        //    context.Valid = false;
-                        //}
-
-                        if (_userinfo == null || _userinfo.Suspended == true)
-                        {
-                            context.Valid = false;
-                            //context = null;
-                        }
-                        else
-                        {
-                            context.UserName = _userinfo.GivenName;
-                            context.Email = msg;
-                            context.Valid = true;
-
-                            //_attachment = "<a class='btn btn-default' href=javascript:getGoogleUserInfo('" +
-                            //  msg + "');>Ver datos</a>";
-                        }
-
-                        break;
-
-                    case "secretToValidate":
-                        var user = await _userManager.FindByEmailAsync(context.Email);
-                        var _decrypt = Helpers.Helpers.DecryptString(user?.SecretResponse, _keyEncode);
-
-                        if (string.IsNullOrEmpty(_decrypt))
-                        {
-                            _decrypt = user?.SecretResponse;
-                        }
-
-                        if (msg == _decrypt)
-                        {
-                            context.Valid = true;
-                        }
-                        else
-                        {
-                            context.Valid = false;
-                        }
-
-                        break;
-
-                    case "confirmationToValidate":
-                        if (context.Valid == true && context.Password != null)
-                        {
-                            string goog = RunPasswordReset(context.Email, context.Password);
-
-                            if (goog.Contains("Error"))
+                            if (!context.Valid)
                             {
-                                context.Action = null;
+                                break;
+                            }
 
-                                MessageRequest _msgGoog = new MessageRequest()
+                            var userEmailToValidate = await _userManager.FindByEmailAsync(msg);
+
+                            if (userEmailToValidate?.EmailConfirmed == false || userEmailToValidate == null)
+                            {
+                                context.Valid = false;
+                                break;
+                            }
+
+                            MyGoogleUserInfo _userinfo = GetGoogleUserInfo(msg);
+
+                            //if (!GoogleUser.IsEmailRegistered(msg))
+                            //{
+                            //    context.Valid = false;
+                            //}
+
+                            if (_userinfo == null || _userinfo.Suspended == true)
+                            {
+                                context.Valid = false;
+                                //context = null;
+                            }
+                            else
+                            {
+                                context.UserName = _userinfo.GivenName;
+                                context.Email = msg;
+                                context.Valid = true;
+
+                                //_attachment = "<a class='btn btn-default' href=javascript:getGoogleUserInfo('" +
+                                //  msg + "');>Ver datos</a>";
+                            }
+
+                            break;
+
+                        case "secretToValidate":
+                            var user = await _userManager.FindByEmailAsync(context.Email);
+                            var _decrypt = Helpers.Helpers.DecryptString(user?.SecretResponse, _keyEncode);
+
+                            if (string.IsNullOrEmpty(_decrypt))
+                            {
+                                _decrypt = user?.SecretResponse;
+                            }
+
+                            if (msg == _decrypt)
+                            {
+                                context.Valid = true;
+                            }
+                            else
+                            {
+                                context.Valid = false;
+                            }
+
+                            break;
+
+                        case "confirmationToValidate":
+                            if (context.Valid == true && context.Password != null)
+                            {
+                                string goog = RunPasswordReset(context.Email, context.Password);
+
+                                if (goog.Contains("Error"))
                                 {
-                                    Output = new OutputData()
+                                    context.Action = null;
+
+                                    MessageRequest _msgGoog = new MessageRequest()
                                     {
-                                        Text = new List<string>()
+                                        Output = new OutputData()
+                                        {
+                                            Text = new List<string>()
                                 {
                                     goog
                                 }
-                                    },
-                                    Context = context
-                                };
+                                        },
+                                        Context = context
+                                    };
 
-                                context.Valid = false;
+                                    context.Valid = false;
 
-                                return Json(JsonConvert.SerializeObject(_msgGoog));
+                                    return Json(JsonConvert.SerializeObject(_msgGoog));
+                                }
                             }
+
+                            break;
+
+                        case "ListPerfiles":
+                            List<string> _listPerfiles = await SOAPservice.GetListPerfilesAsync();
+                            context.Action = null;
+
+                            MessageRequest _message = new MessageRequest()
+                            {
+
+                                Output = new OutputData()
+                                {
+                                    Text = _listPerfiles
+                                },
+                                Context = context
+                            };
+
+                            var obj = JsonConvert.SerializeObject(_message);
+
+                            return Json(obj);
+
+                        case "AddServiceCall":
+
+                            //Test
+                            //if (string.IsNullOrEmpty(context.Email))
+                            //{
+                            //    context.Email = "vcaperuadmin@ajegroup.com";
+                            //}
+
+                            if (string.IsNullOrEmpty(context.Email))
+                            {
+                                context.Email = "vcaperuuser@ajegroup.com";
+                            }
+
+
+                            SOAPservice.ArandaUser _user = await SOAPservice.GetArandaUserInfo(context.Email);
+
+                            SOAPservice.ArandaTicket ticket = await SOAPservice.SetArandaNewTicketAsync(_user);
+
+                            string msgTicket;
+
+                            if (string.IsNullOrEmpty(ticket.TicketNumber))
+                            {
+                                msgTicket = "Correo electrónico no registrado en Aranda. No se pudo crear ticket.";
+                            }
+                            else
+                            {
+                                msgTicket = string.Format("El ticket {0} ha sido creado con exito!", ticket.TicketNumber);
+                            }
+
+                            context.Action = null;
+
+                            MessageRequest _msgAddTicket = new MessageRequest()
+                            {
+                                Output = new OutputData()
+                                {
+                                    Text = new List<string>()
+                                {
+                                    msgTicket
+                                }
+                                },
+                                Context = context
+                            };
+
+                            var objAdTicket = JsonConvert.SerializeObject(_msgAddTicket);
+
+                            return Json(objAdTicket);
+
+                        default:
+                            break;
+                    }
+
+
+                }
+
+
+                MessageRequest result = Message(msg, context, _credentials);
+
+
+                if (result.Intents != null)
+                {
+                    string myIntent = result.Intents[0].IntentDescription;
+                    string myAction = context?.Action;
+
+                    switch (myIntent)
+                    {
+                        case "clima":
+                            string _forecast = await CallWeatherAsync(null, null);
+
+                            if (!string.IsNullOrEmpty(_forecast))
+                            {
+                                result.Output.Text.Add(_forecast);
+                            }
+
+                            break;
+
+                        case "menu":
+                            ButtonListTemplate _menu = new ButtonListTemplate()
+                            {
+                                Buttons = new List<ButtonTemplate>()
+                            {
+                                new ButtonTemplate() { HrefLink = "javascript:sendRequest(false,'ListPerfiles',true);", Text = "Listado de Perfiles" },
+                                new ButtonTemplate() { HrefLink = "javascript:sendRequest(false,'AddServiceCall',true);", Text = "Crear Ticket" },
+                            }
+                            };
+
+                            _attachment = ButtonListConstructor(_menu);
+
+                            break;
+
+                        case "productos":
+
+                            _attachment = CarouselConstructor(GetCarouselList());
+
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+
+                context = result.Context;
+
+                switch (context.Action)
+                {
+                    case "secretToValidate":
+                        var user = await _userManager.FindByEmailAsync(context.Email);
+                        context.Valid = false;
+
+                        if (user != null)
+                        {
+                            result.Output.Text.Add(user.SecretQuestion);
+                            context.Valid = true;
                         }
+                        else
+                        {
+                            result.Output = new OutputData()
+                            {
+                                Text = new List<string>()
+                            {
+                                "Debe registrarse primero en la aplicación"
+                            }
+                            };
+
+                            //context.Valid = false;
+                            context = new Context();
+                        }
+
+
 
                         break;
 
-                    case "ListPerfiles":
-                        List<string> _listPerfiles = await SOAPservice.GetListPerfilesAsync();
-                        context.Action = null;
+                    case "success":
 
-                        MessageRequest _message = new MessageRequest()
-                        {
-
-                            Output = new OutputData()
-                            {
-                                Text = _listPerfiles
-                            },
-                            Context = context
-                        };
-
-                        var obj = JsonConvert.SerializeObject(_message);
-
-                        return Json(obj);
-
-                    case "AddServiceCall":
-
-                        //Test
-                        //if (string.IsNullOrEmpty(context.Email))
-                        //{
-                        //    context.Email = "vcaperuadmin@ajegroup.com";
-                        //}
-
-                        if (string.IsNullOrEmpty(context.Email))
-                        {
-                            context.Email = "vcaperuuser@ajegroup.com";
-                        }
-
+                        //_attachment = "<a class='btn btn-default' href=javascript:getGoogleUserInfo('" +
+                        // context.Email + "');>Ver datos</a>";
+                        //_attachment = _attachment + "<br />";
+                        //_attachment = _attachment + "<a class='btn btn-default' href=javascript:getGoogleTokens('" +
+                        //       context.Email + "');>Generar Tokens</a>";
 
                         SOAPservice.ArandaUser _user = await SOAPservice.GetArandaUserInfo(context.Email);
 
@@ -200,162 +328,47 @@ namespace AjeGroupCore.WebChat
                         }
                         else
                         {
-                            msgTicket = string.Format("El ticket {0} ha sido creado con exito!", ticket.TicketNumber);
+                            string _IdbyProject = await SOAPservice.GetArandaProjectTicketAsync(ticket.TicketNumber);
+
+                            msgTicket = string.Format("El ticket {0} ha sido creado con exito!", _IdbyProject);
                         }
 
-                        context.Action = null;
-
-                        MessageRequest _msgAddTicket = new MessageRequest()
-                        {
-                            Output = new OutputData()
-                            {
-                                Text = new List<string>()
-                                {
-                                    msgTicket
-                                }
-                            },
-                            Context = context
-                        };
-
-                        var objAdTicket = JsonConvert.SerializeObject(_msgAddTicket);
-
-                        return Json(objAdTicket);
-
-                    default:
-                        break;
-                }
-
-
-            }
-
-
-            MessageRequest result = Message(msg, context, _credentials);
-
-
-            if (result.Intents != null)
-            {
-                string myIntent = result.Intents[0].IntentDescription;
-                string myAction = context?.Action;
-
-                switch (myIntent)
-                {
-                    case "clima":
-                        string _forecast = await CallWeatherAsync(null, null);
-
-                        if (!string.IsNullOrEmpty(_forecast))
-                        {
-                            result.Output.Text.Add(_forecast);
-                        }
-
-                        break;
-
-                    case "menu":
-                        ButtonListTemplate _menu = new ButtonListTemplate()
-                        {
-                            Buttons = new List<ButtonTemplate>()
-                            {
-                                new ButtonTemplate() { HrefLink = "javascript:sendRequest(false,'ListPerfiles',true);", Text = "Listado de Perfiles" },
-                                new ButtonTemplate() { HrefLink = "javascript:sendRequest(false,'AddServiceCall',true);", Text = "Crear Ticket" },
-                            }
-                        };
-
-                        _attachment = ButtonListConstructor(_menu);
-
-                        break;
-
-                    case "productos":
-
-                        _attachment = CarouselConstructor(GetCarouselList());
-
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-
-            context = result.Context;
-
-            switch (context.Action)
-            {
-                case "secretToValidate":
-                    var user = await _userManager.FindByEmailAsync(context.Email);
-                    context.Valid = false;
-
-                    if (user != null)
-                    {
-                        result.Output.Text.Add(user.SecretQuestion);
-                        context.Valid = true;
-                    }
-                    else
-                    {
-                        result.Output = new OutputData()
-                        {
-                            Text = new List<string>()
-                            {
-                                "Debe registrarse primero en la aplicación"
-                            }
-                        };
-
-                        //context.Valid = false;
                         context = new Context();
-                    }
+                        result.Output.Text.Add(msgTicket);
+
+                        break;
+                    default:
+                        break;
+                }
 
 
+                //if (context.Action == "success")
+                //{
+                //    _attachment = "<a class='btn btn-default' href=javascript:getGoogleUserInfo('" +
+                //          context.Email + "');>Ver datos</a>";
+                //    _attachment = _attachment + "<br />";
+                //    _attachment = _attachment + "<a class='btn btn-default' href=javascript:getGoogleTokens('" +
+                //           context.Email + "');>Generar Tokens</a>";
+                //}
 
-                    break;
+                if (!string.IsNullOrEmpty(_attachment))
+                {
+                    result.Output.Text.Add(_attachment);
+                }
 
-                case "success":
+                var json = JsonConvert.SerializeObject(result);
 
-                    //_attachment = "<a class='btn btn-default' href=javascript:getGoogleUserInfo('" +
-                    // context.Email + "');>Ver datos</a>";
-                    //_attachment = _attachment + "<br />";
-                    //_attachment = _attachment + "<a class='btn btn-default' href=javascript:getGoogleTokens('" +
-                    //       context.Email + "');>Generar Tokens</a>";
+                return Json(json);
 
-                    SOAPservice.ArandaUser _user = await SOAPservice.GetArandaUserInfo(context.Email);
-
-                    SOAPservice.ArandaTicket ticket = await SOAPservice.SetArandaNewTicketAsync(_user);
-
-                    string msgTicket;
-
-                    if (string.IsNullOrEmpty(ticket.TicketNumber))
-                    {
-                        msgTicket = "Correo electrónico no registrado en Aranda. No se pudo crear ticket.";
-                    }
-                    else
-                    {
-                        string _IdbyProject = await SOAPservice.GetArandaProjectTicketAsync(ticket.TicketNumber);
-
-                        msgTicket = string.Format("El ticket {0} ha sido creado con exito!", _IdbyProject);
-                    }
-
-                    context = new Context();
-                    result.Output.Text.Add(msgTicket);
-
-                    break;
-                default:
-                    break;
             }
-
-
-            //if (context.Action == "success")
-            //{
-            //    _attachment = "<a class='btn btn-default' href=javascript:getGoogleUserInfo('" +
-            //          context.Email + "');>Ver datos</a>";
-            //    _attachment = _attachment + "<br />";
-            //    _attachment = _attachment + "<a class='btn btn-default' href=javascript:getGoogleTokens('" +
-            //           context.Email + "');>Generar Tokens</a>";
-            //}
-
-            if (!string.IsNullOrEmpty(_attachment))
+            catch (Exception ex)
             {
-                result.Output.Text.Add(_attachment);
+                Console.WriteLine(ex.Message);
+
+                return null;
             }
 
-            var json = JsonConvert.SerializeObject(result);
 
-            return Json(json);
         }
 
 

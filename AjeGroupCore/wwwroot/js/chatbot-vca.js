@@ -155,7 +155,7 @@ function sendRequest(init, _action, _isPayload) {
 
             switch (jqXHR.status) {
                 case 500:
-                    _errorMsg = "Error en el servidor";
+                    _errorMsg = "Error en el servidor. " + errorThrown;
                     break;
                 case 404:
                     _errorMsg = "No se ha encontrado el recurso";
