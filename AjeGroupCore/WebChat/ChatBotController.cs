@@ -77,9 +77,10 @@ namespace AjeGroupCore.WebChat
 
                         var userEmailToValidate = await _userManager.FindByEmailAsync(msg);
 
-                        if (userEmailToValidate.EmailConfirmed == false)
+                        if (userEmailToValidate?.EmailConfirmed == false || userEmailToValidate == null)
                         {
                             context.Valid = false;
+                            break;
                         }
 
                         MyGoogleUserInfo _userinfo = GetGoogleUserInfo(msg);

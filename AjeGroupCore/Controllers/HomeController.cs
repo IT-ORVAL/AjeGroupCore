@@ -27,7 +27,8 @@ namespace AjeGroupCore.Controllers
         //    password = "HQJwcbFZclYL"
         //};
 
-
+        
+        //IT-ORVAL=>Test-aje-jg->Aje group Paris
         private WatsonCredentials _credentials = new WatsonCredentials()
         {
             workspaceID = "ac6889fe-7f09-4f71-ac0e-4d8850b72d2f",
@@ -53,6 +54,7 @@ namespace AjeGroupCore.Controllers
 
             if (culture == "en")
             {
+                //IT-ORVAL=>Test-aje-jg->Aje group Paris ENGLISH
                 _credentials.workspaceID = "f4462a3c-709b-4dbb-993c-7dc4d59b5f4d";
             }
             else

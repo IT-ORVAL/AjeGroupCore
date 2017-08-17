@@ -135,6 +135,7 @@ function sendRequest(init, _action, _isPayload) {
         if (_contextAction === "success") {
             NotificationToast("success", "Clave modificada con éxito!", "Confirmación");
             valid = false;
+            _contextAction = null;
         }
 
         if (obj.context.username !== null) {
