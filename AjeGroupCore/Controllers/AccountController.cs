@@ -16,6 +16,7 @@ using OtpSharp;
 using System.Net;
 using System.Globalization;
 using AjeGroupCore.WebChat;
+using System.Text;
 
 namespace AjeGroupCore.Controllers
 {
@@ -79,7 +80,9 @@ namespace AjeGroupCore.Controllers
                     if (!await _userManager.IsEmailConfirmedAsync(user))
                     {
 
-                        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                        //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                        var code = user.SecurityStamp;
 
                         var callbackUrl = Url.Action(nameof(ConfirmEmail), "account", new { userid = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
 
@@ -146,26 +149,7 @@ namespace AjeGroupCore.Controllers
 
             if (ModelState.IsValid)
             {
-                //var x = model.Birthday.ToString("dd-MM-yyyy");
-                //var xx = model.Birthday.ToString("yyyy-MM-dd HH:mm:ss");
-
-                //var z = Convert.ToDateTime(x);
-                //var zz = Convert.ToDateTime(xx);            
-
-                //var ooo = string.Format(model.Birthday.ToString(), "yyyy-MM-dd");
-
-                //var xxxxx = model.Birthday.ToUniversalTime();
-
-                //string dateString, format;
-                //DateTime myDate;
-                //CultureInfo provider = CultureInfo.InvariantCulture;
-                //format = "yyyy-MM-dd HH:mm:ss";
-                //dateString = xx;
-                //myDate = DateTime.ParseExact(xx, format, provider);
-
-
-                //DateTime dt2 = DateTime.ParseExact(x, "yyyy/MM/dd", CultureInfo.InvariantCulture);
-
+                
                 var _encrypt = Helpers.Helpers.EncryptString(model.SecretResponse, ChatBotController._keyEncode);
 
                 var user = new ApplicationUser {
@@ -183,7 +167,9 @@ namespace AjeGroupCore.Controllers
 
                 if (result.Succeeded)
                 {
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    //var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+                    var code = user.SecurityStamp;
 
                     var callbackUrl = Url.Action(nameof(ConfirmEmail), "account", new { userid = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
 
@@ -330,17 +316,39 @@ namespace AjeGroupCore.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ConfirmEmail(string userId, string code)
         {
-            if (userId == null || code == null)
+            try
             {
+                if (userId == null || code == null)
+                {
+                    return View("Error");
+                }
+                var user = await _userManager.FindByIdAsync(userId);
+
+                if (user == null)
+                {
+                    return View("Error");
+                }
+
+                bool validate = false;
+
+                if (user.SecurityStamp == code)
+                {
+                    validate = true;
+                }
+
+                //var result = await _userManager.ConfirmEmailAsync(user, code);
+
+                //return View(result.Succeeded ? "ConfirmEmail" : "Error");
+
+                return View(validate ? "ConfirmEmail" : "Error");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
                 return View("Error");
             }
-            var user = await _userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                return View("Error");
-            }
-            var result = await _userManager.ConfirmEmailAsync(user, code);
-            return View(result.Succeeded ? "ConfirmEmail" : "Error");
+
+           
         }
 
         //

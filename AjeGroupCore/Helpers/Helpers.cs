@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -103,6 +104,20 @@ namespace AjeGroupCore.Helpers
             }
 
 
+        }
+
+        public static string Base64ForUrlEncode(string str)
+        {
+
+            var encbuff = Encoding.UTF8.GetBytes(str);
+            //var result = WebUtility.UrlDecode(encbuff);
+
+            return encbuff.ToString();
+        }
+
+        public static string Base64ForUrlDecode(string str)
+        {
+            return str != null ? WebUtility.UrlDecode(str) : null;
         }
     }
 }
