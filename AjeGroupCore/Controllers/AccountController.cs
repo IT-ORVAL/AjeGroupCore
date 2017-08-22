@@ -17,6 +17,7 @@ using System.Net;
 using System.Globalization;
 using AjeGroupCore.WebChat;
 using System.Text;
+using AjeGroupCore.Data;
 
 namespace AjeGroupCore.Controllers
 {
@@ -30,7 +31,7 @@ namespace AjeGroupCore.Controllers
         private readonly ILogger _logger;
         private readonly string _externalCookieScheme;
 
-
+        private readonly ApplicationDbContext _context;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -38,7 +39,8 @@ namespace AjeGroupCore.Controllers
             IOptions<IdentityCookieOptions> identityCookieOptions,
             IEmailSender emailSender,
             ISmsSender smsSender,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -46,6 +48,7 @@ namespace AjeGroupCore.Controllers
             _emailSender = emailSender;
             _smsSender = smsSender;
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _context = context;
         }
 
         //
@@ -334,6 +337,10 @@ namespace AjeGroupCore.Controllers
                 if (user.SecurityStamp == code)
                 {
                     validate = true;
+                    user.EmailConfirmed = true;
+
+                    _context.Update(user);
+                    await _context.SaveChangesAsync();
                 }
 
                 //var result = await _userManager.ConfirmEmailAsync(user, code);
