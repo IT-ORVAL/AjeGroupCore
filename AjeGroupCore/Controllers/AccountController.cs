@@ -122,7 +122,7 @@ namespace AjeGroupCore.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Intnto de ingreso inválido");
+                    ModelState.AddModelError(string.Empty, "Intento de ingreso inválido");
                     return View(model);
                 }
             }
