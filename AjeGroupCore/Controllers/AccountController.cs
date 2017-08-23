@@ -392,6 +392,7 @@ namespace AjeGroupCore.Controllers
                 }
 
                 var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+
                 var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
 
                 await _emailSender.SendEmailAsync(model.Email, "AJE Group - Reinicio de Clave",
@@ -442,6 +443,7 @@ namespace AjeGroupCore.Controllers
                 return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
             }
             var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+
             if (result.Succeeded)
             {
                 return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");

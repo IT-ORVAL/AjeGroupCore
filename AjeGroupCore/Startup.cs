@@ -154,6 +154,13 @@ namespace AjeGroupCore
             }
             else
             {
+                app.UseCookieAuthentication(new CookieAuthenticationOptions
+                {
+                    AutomaticAuthenticate = true,
+                    AutomaticChallenge = true,
+                    CookieDomain = "https://ajegroup.com/"  // This must match the domain to support the same cookie across subdomains
+                });
+
                 app.UseExceptionHandler("/Home/Error");
             }
 
