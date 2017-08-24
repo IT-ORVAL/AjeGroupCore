@@ -325,6 +325,7 @@ namespace AjeGroupCore.Controllers
                 {
                     return View("Error");
                 }
+
                 var user = await _userManager.FindByIdAsync(userId);
 
                 if (user == null)
@@ -377,12 +378,14 @@ namespace AjeGroupCore.Controllers
             if (ModelState.IsValid)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
+                var code = user.SecurityStamp;
 
                 if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
                 {
-                    var code1 = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                    //var code1 = await _userManager.GenerateEmailConfirmationTokenAsync(user);
 
-                    var callbackUrl1 = Url.Action(nameof(ConfirmEmail), "account", new { userid = user.Id, code = code1 }, protocol: HttpContext.Request.Scheme);
+
+                    var callbackUrl1 = Url.Action(nameof(ConfirmEmail), "account", new { userid = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
 
                     await _emailSender.SendEmailAsync(model.Email, "AJE Group - Confirme su cuenta",
                         $"Por favor confirme su cuenta haciendo click <a href='{callbackUrl1}'>AQUI</a>");
@@ -391,7 +394,7 @@ namespace AjeGroupCore.Controllers
                     return View("ForgotPasswordConfirmation");
                 }
 
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                //var code = await _userManager.GeneratePasswordResetTokenAsync(user);
 
                 var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
 
@@ -442,13 +445,22 @@ namespace AjeGroupCore.Controllers
                 // Don't reveal that the user does not exist
                 return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
             }
-            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
 
-            if (result.Succeeded)
+
+            if (user.SecurityStamp == model.Code)
             {
-                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
+                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
+                }
+
+                AddErrors(result);
             }
-            AddErrors(result);
+
+
             return View();
         }
 

@@ -65,10 +65,10 @@ function sendRequest(init, _action, _isPayload) {
             if (msg.length < 8) {
                 NotificationToast("error", "La clave debe ser mínimo de 8 caracteres", "Error");
 
-                _contextAction = "emailToValidate";
-                valid = false;
+                //_contextAction = "emailToValidate";
+                //valid = false;
 
-                appendMessage(false, "La clave debe ser mínimo de 8 caracteres");
+                appendMessage(false, "La clave debe ser mínimo de 8 caracteres. Intente de nuevo.");
 
                 resetInputChat();
                 return;
@@ -82,7 +82,7 @@ function sendRequest(init, _action, _isPayload) {
 
         case "confirmationToValidate":
             if (_password !== msg) {
-                NotificationToast("error", "La confirmación no coincide con la clave. Intente de nuevo", "Error");
+                NotificationToast("error", "La confirmación no coincide con la clave. Intente de nuevo.", "Error");
 
                 _contextAction = "passwordToValidate";
                 valid = false;

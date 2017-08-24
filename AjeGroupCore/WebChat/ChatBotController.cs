@@ -53,6 +53,7 @@ namespace AjeGroupCore.WebChat
 
                 if (_credentials == null)
                 {
+                    //IT-ORVAL=>Test-aje-jg->Aje group Paris
                     _credentials = new WatsonCredentials()
                     {
                         workspaceID = "ac6889fe-7f09-4f71-ac0e-4d8850b72d2f",
