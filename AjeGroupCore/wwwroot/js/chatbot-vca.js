@@ -95,7 +95,7 @@ function sendRequest(init, _action, _isPayload) {
             break;
 
         default:
-            if (init !== true && _isPayload == false) {
+            if (init !== true && _isPayload === false) {
                 appendMessage(true, msg);
                 valid = false;
             }

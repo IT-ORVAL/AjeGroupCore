@@ -21,6 +21,11 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Mvc.Razor;
 using static IBM.VCA.Watson.Watson.WatsonConversationService;
+using System.Net;
+using StackExchange.Redis;
+using Microsoft.AspNetCore.DataProtection;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace AjeGroupCore
 {
@@ -49,6 +54,15 @@ namespace AjeGroupCore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //var redisHost = Configuration.GetValue<string>("Redis:Host");
+            //var redisPort = Configuration.GetValue<int>("Redis:Port");
+            //var redisIpAddress = Dns.GetHostEntryAsync(redisHost).Result.AddressList.Last();
+            //var redis = ConnectionMultiplexer.Connect($"{redisIpAddress}:{redisPort}");
+
+            //services.AddDataProtection().PersistKeysToRedis(redis, "DataProtection-Keys");
+            //services.AddOptions();
+
+
             //// Add framework services SQL Server
             //services.AddDbContext<ApplicationDbContext>(options =>
             //    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -59,12 +73,26 @@ namespace AjeGroupCore
 
             services.Configure<IdentityOptions>(options =>
             {
+                options.Cookies.ApplicationCookie.AuthenticationScheme = "ApplicationCookie";
+                options.Lockout.AllowedForNewUsers = true;
+
                 options.Password.RequireDigit = true;
                 options.Password.RequiredLength = 5;
                 options.Password.RequireLowercase = true;
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequireUppercase = false;
+
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+                options.Lockout.MaxFailedAccessAttempts = 10;
             });
+
+            // Services used by identity
+            services.AddAuthentication(options =>
+            {
+                // This is the Default value for ExternalCookieAuthenticationScheme
+                options.SignInScheme = new IdentityCookieOptions().ExternalCookieAuthenticationScheme;
+            });
+
 
             services.AddIdentity<ApplicationUser, IdentityRole>(config =>
             {
@@ -82,11 +110,11 @@ namespace AjeGroupCore
             services.AddLocalization(opts => { opts.ResourcesPath = "Resources"; });
 
 
-            services.Configure<IdentityOptions>(options =>
-            {
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
-                options.Lockout.MaxFailedAccessAttempts = 10;
-            });
+            //services.Configure<IdentityOptions>(options =>
+            //{
+            //    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+            //    options.Lockout.MaxFailedAccessAttempts = 10;
+            //});
 
 
             services.AddMvc()
@@ -154,13 +182,6 @@ namespace AjeGroupCore
             }
             else
             {
-                app.UseCookieAuthentication(new CookieAuthenticationOptions
-                {
-                    AutomaticAuthenticate = true,
-                    AutomaticChallenge = true,
-                    CookieDomain = "https://ajegroup.com/"  // This must match the domain to support the same cookie across subdomains
-                });
-
                 app.UseExceptionHandler("/Home/Error");
             }
 
@@ -197,6 +218,67 @@ namespace AjeGroupCore
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+    }
+
+
+    public class UserClaimsPrincipalFactory<TUser> : Microsoft.AspNetCore.Identity.IUserClaimsPrincipalFactory<TUser>
+            where TUser : class
+    {
+        public UserClaimsPrincipalFactory(
+            UserManager<TUser> userManager,
+            IOptions<IdentityOptions> optionsAccessor)
+        {
+            if (userManager == null)
+            {
+                throw new ArgumentNullException(nameof(userManager));
+            }
+            if (optionsAccessor == null || optionsAccessor.Value == null)
+            {
+                throw new ArgumentNullException(nameof(optionsAccessor));
+            }
+
+            UserManager = userManager;
+            Options = optionsAccessor.Value;
+        }
+
+        public UserManager<TUser> UserManager { get; private set; }
+
+        public IdentityOptions Options { get; private set; }
+
+        public virtual async Task<ClaimsPrincipal> CreateAsync(TUser user)
+        {
+            if (user == null)
+            {
+                throw new ArgumentNullException(nameof(user));
+            }
+
+            var userId = await UserManager.GetUserIdAsync(user);
+            var userName = await UserManager.GetUserNameAsync(user);
+            var id = new ClaimsIdentity(Options.Cookies.ApplicationCookieAuthenticationScheme,
+                Options.ClaimsIdentity.UserNameClaimType,
+                Options.ClaimsIdentity.RoleClaimType);
+            id.AddClaim(new Claim(Options.ClaimsIdentity.UserIdClaimType, userId));
+            id.AddClaim(new Claim(Options.ClaimsIdentity.UserNameClaimType, userName));
+            if (UserManager.SupportsUserSecurityStamp)
+            {
+                id.AddClaim(new Claim(Options.ClaimsIdentity.SecurityStampClaimType,
+                    await UserManager.GetSecurityStampAsync(user)));
+            }
+            if (UserManager.SupportsUserRole)
+            {
+                var roles = await UserManager.GetRolesAsync(user);
+                foreach (var roleName in roles)
+                {
+                    id.AddClaim(new Claim(Options.ClaimsIdentity.RoleClaimType, roleName));
+                }
+            }
+            if (UserManager.SupportsUserClaim)
+            {
+                id.AddClaims(await UserManager.GetClaimsAsync(user));
+            }
+
+            return new ClaimsPrincipal(id);
         }
     }
 }

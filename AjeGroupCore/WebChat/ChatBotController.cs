@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using static AjeGroupCore.WebChat.GoogleUser;
@@ -49,9 +51,19 @@ namespace AjeGroupCore.WebChat
             {
                 string _attachment = null;
 
+                if (_credentials == null)
+                {
+                    _credentials = new WatsonCredentials()
+                    {
+                        workspaceID = "ac6889fe-7f09-4f71-ac0e-4d8850b72d2f",
+                        username = "7ecc7e1d-b7a9-472b-9419-a7254411cdd5",
+                        password = "HQJwcbFZclYL"
+                    };
+                }
+
                 if (isInit)
                 {
-                    context = null;
+                    context = new Context();
 
                 }
 
@@ -111,9 +123,16 @@ namespace AjeGroupCore.WebChat
                             break;
 
                         case "secretToValidate":
+
+                            if (string.IsNullOrEmpty(context.Email))
+                            {
+                                break;
+                            }
+
                             var user = await _userManager.FindByEmailAsync(context.Email);
                             var _decrypt = Helpers.Helpers.DecryptString(user?.SecretResponse, _keyEncode);
 
+                            //Default if not encrypted secret response previously
                             if (string.IsNullOrEmpty(_decrypt))
                             {
                                 _decrypt = user?.SecretResponse;
@@ -122,10 +141,12 @@ namespace AjeGroupCore.WebChat
                             if (msg == _decrypt)
                             {
                                 context.Valid = true;
+                                //context.Action = null;
                             }
                             else
                             {
                                 context.Valid = false;
+                                //context.Action = "emailToValidate";
                             }
 
                             break;
@@ -144,9 +165,9 @@ namespace AjeGroupCore.WebChat
                                         Output = new OutputData()
                                         {
                                             Text = new List<string>()
-                                {
-                                    goog
-                                }
+                                            {
+                                                goog
+                                            }
                                         },
                                         Context = context
                                     };
@@ -282,13 +303,33 @@ namespace AjeGroupCore.WebChat
                 switch (context.Action)
                 {
                     case "secretToValidate":
-                        var user = await _userManager.FindByEmailAsync(context.Email);
+
                         context.Valid = false;
+
+                        if (string.IsNullOrEmpty(context.Email) || !IsValidEmail(context.Email))
+                        {
+                          
+                            break;
+                        }
+
+                        var user = await _userManager.FindByEmailAsync(context.Email);
+                        var _decrypt = Helpers.Helpers.DecryptString(user?.SecretResponse, _keyEncode);
+
+                        //Default if not encrypted secret response previously
+                        if (string.IsNullOrEmpty(_decrypt))
+                        {
+                            _decrypt = user?.SecretResponse;
+                        }
+
+                        if (msg == _decrypt)
+                        {
+                            context.Valid = true;
+                            break;
+                        }
 
                         if (user != null)
                         {
                             result.Output.Text.Add(user.SecretQuestion);
-                            context.Valid = true;
                         }
                         else
                         {
@@ -478,5 +519,54 @@ namespace AjeGroupCore.WebChat
         }
 
 
+        public bool IsValidEmail(string _email)
+        {
+            if (String.IsNullOrEmpty(_email))
+                return false;
+
+            // Use IdnMapping class to convert Unicode domain names.
+            try
+            {
+                _email = Regex.Replace(_email, @"(@)(.+)$", this.DomainMapper,
+                                      RegexOptions.None, TimeSpan.FromMilliseconds(200));
+            }
+            catch (RegexMatchTimeoutException)
+            {
+                return false;
+            }
+
+            
+            // Return true if strIn is in valid e-mail format.
+            try
+            {
+                return Regex.IsMatch(_email,
+                      @"^(?("")("".+?(?<!\\)""@)|(([0-9a-z]((\.(?!\.))|[-!#\$%&'\*\+/=\?\^`\{\}\|~\w])*)(?<=[0-9a-z])@))" +
+                      @"(?(\[)(\[(\d{1,3}\.){3}\d{1,3}\])|(([0-9a-z][-\w]*[0-9a-z]*\.)+[a-z0-9][\-a-z0-9]{0,22}[a-z0-9]))$",
+                      RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(250));
+            }
+            catch (RegexMatchTimeoutException)
+            {
+                return false;
+            }
+        }
+
+        private string DomainMapper(Match match)
+        {
+            // IdnMapping class with default property values.
+            IdnMapping idn = new IdnMapping();
+
+            string domainName = match.Groups[2].Value;
+            try
+            {
+                domainName = idn.GetAscii(domainName);
+            }
+            catch (ArgumentException)
+            {
+                return "true";
+            }
+            return match.Groups[1].Value + domainName;
+        }
     }
+
+
 }
