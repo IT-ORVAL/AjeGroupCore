@@ -449,8 +449,12 @@ namespace AjeGroupCore.Controllers
 
             if (user.SecurityStamp == model.Code)
             {
-                var code = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+                //var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+                //var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+
+                await _userManager.RemovePasswordAsync(user);
+
+                var result = await _userManager.AddPasswordAsync(user, model.Password);
 
                 if (result.Succeeded)
                 {
