@@ -46,7 +46,7 @@ namespace AjeGroupCore.WebChat
                 };
 
                 //Prepares the update request
-                var updateRequest = directoryService.Users.Update(userBody, userkey);
+                UsersResource.UpdateRequest updateRequest = directoryService.Users.Update(userBody, userkey);
 
                 //Executes the update request
                 updateRequest.Execute();
